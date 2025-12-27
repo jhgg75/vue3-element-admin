@@ -1,21 +1,23 @@
 import request from "@/utils/request";
+import qs from "qs";
 
 const AUTH_BASE_URL = "/api/v1/auth";
 
 const AuthAPI = {
   /** 登录接口*/
   login(data: LoginFormData) {
-    const formData = new FormData();
-    formData.append("username", data.username);
-    formData.append("password", data.password);
-    formData.append("captchaKey", data.captchaKey);
-    formData.append("captchaCode", data.captchaCode);
     return request<any, LoginResult>({
-      url: `${AUTH_BASE_URL}/login`,
+      url: `/connect/token`,
       method: "post",
-      data: formData,
+      data: qs.stringify({
+        username: data.username,
+        password: data.password,
+        client_id: data.clientId,
+        grant_type: data.grantType,
+        scope: data.scope,
+      }),
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     });
   },
@@ -58,11 +60,20 @@ export interface LoginFormData {
   /** 密码 */
   password: string;
   /** 验证码缓存key */
-  captchaKey: string;
-  /** 验证码 */
-  captchaCode: string;
+  // captchaKey: string;
+  // /** 验证码 */
+  // captchaCode: string;
   /** 记住我 */
   rememberMe: boolean;
+
+  /** 客户端ID */
+  clientId: string;
+
+  /** 授权类型 */
+  grantType: string;
+
+  /** 范围 */
+  scope: string;
 }
 
 /** 登录响应 */

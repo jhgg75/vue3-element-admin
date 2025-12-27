@@ -131,9 +131,10 @@ const rememberMe = AuthStorage.getRememberMe();
 
 const loginFormData = ref<LoginFormData>({
   username: "admin",
-  password: "123456",
-  // captchaKey: "",
-  // captchaCode: "",
+  password: "1q2w3E*",
+  clientId: "EasyNews_App",
+  grantType: "password",
+  scope: "EasyNews profile",
   rememberMe,
 });
 
