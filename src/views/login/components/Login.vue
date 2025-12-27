@@ -36,7 +36,7 @@
       </el-tooltip>
 
       <!-- 验证码 -->
-      <el-form-item prop="captchaCode">
+      <!-- <el-form-item prop="captchaCode">
         <div flex items-center gap-10px>
           <el-input
             v-model.trim="loginFormData.captchaCode"
@@ -62,7 +62,7 @@
             <el-text v-else type="info" size="small">点击获取验证码</el-text>
           </div>
         </div>
-      </el-form-item>
+      </el-form-item> -->
 
       <div class="flex-x-between w-full">
         <el-checkbox v-model="loginFormData.rememberMe">{{ t("login.rememberMe") }}</el-checkbox>
@@ -112,7 +112,7 @@
 </template>
 <script setup lang="ts">
 import type { FormInstance } from "element-plus";
-import AuthAPI, { type LoginFormData } from "@/api/auth-api";
+import { type LoginFormData } from "@/api/auth-api";
 import router from "@/router";
 import { useUserStore } from "@/store";
 import CommonWrapper from "@/components/CommonWrapper/index.vue";
@@ -122,22 +122,18 @@ const { t } = useI18n();
 const userStore = useUserStore();
 const route = useRoute();
 
-onMounted(() => getCaptcha());
-
 const loginFormRef = ref<FormInstance>();
 const loading = ref(false);
 // 是否大写锁定
 const isCapsLock = ref(false);
-// 验证码图片Base64字符串
-const captchaBase64 = ref();
 // 记住我
 const rememberMe = AuthStorage.getRememberMe();
 
 const loginFormData = ref<LoginFormData>({
   username: "admin",
   password: "123456",
-  captchaKey: "",
-  captchaCode: "",
+  // captchaKey: "",
+  // captchaCode: "",
   rememberMe,
 });
 
@@ -162,27 +158,27 @@ const loginRules = computed(() => {
         trigger: "blur",
       },
     ],
-    captchaCode: [
-      {
-        required: true,
-        trigger: "blur",
-        message: t("login.message.captchaCode.required"),
-      },
-    ],
+    // captchaCode: [
+    //   {
+    //     required: true,
+    //     trigger: "blur",
+    //     message: t("login.message.captchaCode.required"),
+    //   },
+    // ],
   };
 });
 
 // 获取验证码
-const codeLoading = ref(false);
-function getCaptcha() {
-  codeLoading.value = true;
-  AuthAPI.getCaptcha()
-    .then((data) => {
-      loginFormData.value.captchaKey = data.captchaKey;
-      captchaBase64.value = data.captchaBase64;
-    })
-    .finally(() => (codeLoading.value = false));
-}
+// const codeLoading = ref(false);
+// function getCaptcha() {
+//   codeLoading.value = true;
+//   AuthAPI.getCaptcha()
+//     .then((data) => {
+//       loginFormData.value.captchaKey = data.captchaKey;
+//       captchaBase64.value = data.captchaBase64;
+//     })
+//     .finally(() => (codeLoading.value = false));
+// }
 
 /**
  * 登录提交
@@ -203,7 +199,6 @@ async function handleLoginSubmit() {
     await router.push(decodeURIComponent(redirectPath));
   } catch (error) {
     // 4. 统一错误处理
-    getCaptcha(); // 刷新验证码
     console.error("登录失败:", error);
   } finally {
     loading.value = false;
