@@ -3,6 +3,8 @@ import qs from "qs";
 
 const AUTH_BASE_URL = "/api/v1/auth";
 
+import { AuthStorage } from "@/utils/auth";
+
 const AuthAPI = {
   /** 登录接口*/
   login(data: LoginFormData) {
@@ -35,11 +37,48 @@ const AuthAPI = {
   },
 
   /** 退出登录接口 */
-  logout() {
-    return request({
-      url: `${AUTH_BASE_URL}/logout`,
-      method: "delete",
-    });
+  async logout() {
+    const accessToken = AuthStorage.getAccessToken();
+    const refreshToken = AuthStorage.getRefreshToken();
+    const clientId = "EasyNews_App"; // 暂时硬编码，与Login.vue保持一致
+
+    const requests: Promise<any>[] = [];
+
+    if (accessToken) {
+      requests.push(
+        request({
+          url: `/connect/revocation`,
+          method: "post",
+          data: qs.stringify({
+            token: accessToken,
+            token_type_hint: "access_token",
+            client_id: clientId,
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+      );
+    }
+
+    if (refreshToken) {
+      requests.push(
+        request({
+          url: `/connect/revocation`,
+          method: "post",
+          data: qs.stringify({
+            token: refreshToken,
+            token_type_hint: "refresh_token",
+            client_id: clientId,
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+      );
+    }
+
+    return Promise.all(requests);
   },
 
   /** 获取验证码接口*/
