@@ -3,9 +3,7 @@ declare global {
    * 响应数据
    */
   interface ApiResponse<T = any> {
-    code: string;
     data: T;
-    msg: string;
   }
 
   /**

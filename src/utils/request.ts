@@ -1,6 +1,5 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosResponse } from "axios";
 import qs from "qs";
-import { ApiCodeEnum } from "@/enums/api/code-enum";
 import { AuthStorage, redirectToLogin } from "@/utils/auth";
 import { useTokenRefresh } from "@/composables/auth/useTokenRefresh";
 import { authConfig } from "@/settings";
@@ -44,22 +43,15 @@ httpRequest.interceptors.request.use(
  * 响应拦截器 - 统一处理响应和错误
  */
 httpRequest.interceptors.response.use(
-  (response: AxiosResponse<ApiResponse>) => {
+  (response: AxiosResponse<any>) => {
     // 如果响应是二进制数据，则直接返回response对象（用于文件下载、Excel导出、图片显示等）
     if (response.config.responseType === "blob" || response.config.responseType === "arraybuffer") {
       return response;
     }
 
-    const { code, data, msg } = response.data;
-
-    // 请求成功
-    if (code === ApiCodeEnum.SUCCESS) {
-      return data;
-    }
-
-    // 业务错误
-    ElMessage.error(msg || "系统出错");
-    return Promise.reject(new Error(msg || "Business Error"));
+    // ABP VNext 默认直接返回数据，不包裹 code/msg/data 结构
+    // 只要 HTTP 状态码是 2xx，就视为成功
+    return response.data;
   },
   async (error) => {
     console.error("Response interceptor error:", error);
@@ -72,11 +64,14 @@ httpRequest.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const { code, msg } = response.data as ApiResponse;
+    // 根据 HTTP 状态码进行处理
+    const status = response.status;
+    const data = response.data;
+    const msg = data?.error?.message || data?.error_description || "请求失败";
 
-    switch (code) {
-      case ApiCodeEnum.ACCESS_TOKEN_INVALID:
-        // Access Token 过期
+    switch (status) {
+      case 401:
+        // 401 Unauthorized: Access Token 过期或无效
         if (authConfig.enableTokenRefresh) {
           // 启用了token刷新，尝试刷新
           return refreshTokenAndRetry(config, httpRequest);
@@ -85,15 +80,30 @@ httpRequest.interceptors.response.use(
           await redirectToLogin("登录已过期，请重新登录");
           return Promise.reject(new Error(msg || "Access Token Invalid"));
         }
+      // 403 Forbidden: 权限不足
+      case 403:
+        ElMessage.error("您没有权限执行此操作");
+        return Promise.reject(new Error(msg || "Forbidden"));
 
-      case ApiCodeEnum.REFRESH_TOKEN_INVALID:
-        // Refresh Token 过期，跳转登录页
-        await redirectToLogin("登录已过期，请重新登录");
-        return Promise.reject(new Error(msg || "Refresh Token Invalid"));
+      // 400 Bad Request: 参数错误或业务验证失败
+      case 400:
+        ElMessage.error(msg);
+        return Promise.reject(new Error(msg || "Bad Request"));
 
+      // 404 Not Found: 资源不存在
+      case 404:
+        ElMessage.error("请求的资源不存在");
+        return Promise.reject(new Error(msg || "Not Found"));
+
+      // 500 Internal Server Error: 服务器错误
+      case 500:
+        ElMessage.error("服务器内部错误");
+        return Promise.reject(new Error(msg || "Internal Server Error"));
+
+      // 其他错误状态码
       default:
-        ElMessage.error(msg || "请求失败");
-        return Promise.reject(new Error(msg || "Request Error"));
+        ElMessage.error(msg || `请求失败(${status})`);
+        return Promise.reject(new Error(msg || `Request Error (${status})`));
     }
   }
 );

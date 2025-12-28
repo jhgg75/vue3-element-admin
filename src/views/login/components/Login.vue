@@ -134,7 +134,7 @@ const loginFormData = ref<LoginFormData>({
   password: "1q2w3E*",
   clientId: "EasyNews_App",
   grantType: "password",
-  scope: "EasyNews profile",
+  scope: "EasyNews offline_access",
   rememberMe,
 });
 

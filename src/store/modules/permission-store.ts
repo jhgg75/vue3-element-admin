@@ -18,7 +18,25 @@ export const usePermissionStore = defineStore("permission", () => {
   /** 生成动态路由 */
   async function generateRoutes(): Promise<RouteRecordRaw[]> {
     try {
-      const data = await MenuAPI.getRoutes(); // 获取当前登录人的菜单路由
+      // const data = await MenuAPI.getRoutes(); // 获取当前登录人的菜单路由
+      // 临时硬编码菜单
+      const data: RouteVO[] = [
+        {
+          path: "/news",
+          component: "Layout",
+          name: "News",
+          meta: { title: "新闻管理", icon: "system" },
+          children: [
+            {
+              path: "list",
+              component: "news/index",
+              name: "NewsList",
+              meta: { title: "新闻列表", icon: "document" },
+              children: [],
+            },
+          ],
+        },
+      ];
       const dynamicRoutes = transformRoutes(data);
 
       routes.value = [...constantRoutes, ...dynamicRoutes];
