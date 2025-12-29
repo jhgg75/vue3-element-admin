@@ -34,6 +34,13 @@ export const usePermissionStore = defineStore("permission", () => {
               meta: { title: "新闻列表", icon: "document" },
               children: [],
             },
+            {
+              path: "create",
+              component: "news/create",
+              name: "NewsCreate",
+              meta: { title: "新增新闻", hidden: true, activeMenu: "/news/list" },
+              children: [],
+            },
           ],
         },
       ];

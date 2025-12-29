@@ -9,7 +9,7 @@
 -->
 
 <template>
-  <div style="z-index: 999; border: 1px solid var(--el-border-color)">
+  <div style="z-index: 999; width: 100%; border: 1px solid var(--el-border-color)">
     <!-- 工具栏 -->
     <Toolbar
       :editor="editorRef"
@@ -55,7 +55,41 @@ const modelValue = defineModel("modelValue", {
 const editorRef = shallowRef();
 
 // 工具栏配置
-const toolbarConfig = ref<Partial<IToolbarConfig>>({});
+const toolbarConfig = ref<Partial<IToolbarConfig>>({
+  toolbarKeys: [
+    "headerSelect",
+    "blockquote",
+    "|",
+    "bold",
+    "underline",
+    "italic",
+    {
+      key: "group-more-style",
+      title: "更多",
+      iconSvg:
+        '<svg viewBox="0 0 1024 1024"><path d="M204.8 505.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z"></path><path d="M505.6 505.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z"></path><path d="M806.4 505.6m-76.8 0a76.8 76.8 0 1 0 153.6 0 76.8 76.8 0 1 0-153.6 0Z"></path></svg>',
+      menuKeys: ["through", "code", "clearStyle"],
+    },
+    "color",
+    "bgColor",
+    "|",
+    "fontSize",
+    "lineHeight",
+    "|",
+    "bulletedList",
+    "numberedList",
+    "todo",
+    "|",
+    "uploadImage",
+    "insertLink",
+    "insertTable",
+    "codeBlock",
+    "|",
+    "undo",
+    "redo",
+  ],
+  excludeKeys: ["fullScreen"],
+});
 
 // 编辑器配置
 const editorConfig = ref<Partial<IEditorConfig>>({
