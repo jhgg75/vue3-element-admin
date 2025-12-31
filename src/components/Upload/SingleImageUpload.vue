@@ -14,8 +14,8 @@
       <template v-if="modelValue">
         <el-image
           class="single-upload__image"
-          :src="modelValue"
-          :preview-src-list="[modelValue]"
+          :src="imageUrl"
+          :preview-src-list="[imageUrl]"
           @click.stop="handlePreview"
         />
         <el-icon class="single-upload__delete-btn" @click.stop="handleDelete">
@@ -87,6 +87,16 @@ const modelValue = defineModel("modelValue", {
   default: () => "",
 });
 
+const imgDomain = import.meta.env.VITE_OSS_DOMAIN || "";
+
+const imageUrl = computed(() => {
+  if (!modelValue.value) return "";
+  if (modelValue.value.startsWith("http://") || modelValue.value.startsWith("https://")) {
+    return modelValue.value;
+  }
+  return imgDomain + modelValue.value;
+});
+
 /**
  * 限制用户上传文件的格式和大小
  */
@@ -128,15 +138,8 @@ function handleUpload(options: UploadRequestOptions) {
   return new Promise((resolve, reject) => {
     const file = options.file;
 
-    const formData = new FormData();
-    formData.append(props.name, file);
-
-    // 处理附加参数
-    Object.keys(props.data).forEach((key) => {
-      formData.append(key, props.data[key]);
-    });
-
-    FileAPI.upload(formData)
+    // 使用 FileAPI.uploadFile 自动处理文件名唯一性
+    FileAPI.uploadFile(file as File)
       .then((data) => {
         resolve(data);
       })

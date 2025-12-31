@@ -99,8 +99,17 @@ const editorConfig = ref<Partial<IEditorConfig>>({
       customUpload(file: File, insertFn: InsertFnType) {
         // 上传图片
         FileAPI.uploadFile(file).then((res) => {
+          // 获取 OSS 域名
+          const imgDomain = import.meta.env.VITE_OSS_DOMAIN || "";
+          let url = res.url;
+
+          // 如果是相对路径，拼接 OSS 域名
+          if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
+            url = imgDomain + url;
+          }
+
           // 插入图片
-          insertFn(res.url, res.name, res.url);
+          insertFn(url, res.name, url);
         });
       },
     } as any,

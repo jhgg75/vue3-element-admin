@@ -4,7 +4,7 @@ const FileAPI = {
   /** 上传文件 （传入 FormData，上传进度回调） */
   upload(formData: FormData, onProgress?: (percent: number) => void) {
     return request<any, FileInfo>({
-      url: "/api/v1/files",
+      url: "/upload/file",
       method: "post",
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
@@ -20,9 +20,17 @@ const FileAPI = {
   /** 上传文件（传入 File） */
   uploadFile(file: File) {
     const formData = new FormData();
+    // 生成唯一文件名
+    const timestamp = new Date().getTime();
+    const random = Math.floor(Math.random() * 10000);
+    const extension = file.name.split(".").pop();
+    const uniqueFileName = `${timestamp}-${random}.${extension}`;
+
     formData.append("file", file);
+    formData.append("name", uniqueFileName);
+
     return request<any, FileInfo>({
-      url: "/api/v1/files",
+      url: "/upload/file",
       method: "post",
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
