@@ -12,6 +12,32 @@ const UserAPI = {
     return request<any, UserInfo>({
       url: `/api/account/my-profile`,
       method: "get",
+    }).then((userObj) => {
+      // 头像处理
+      const avatarPath = userObj.extraProperties?.Avatar;
+      let avatar = "";
+      if (avatarPath) {
+        if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
+          avatar = avatarPath;
+        } else {
+          const ossDomain = import.meta.env.VITE_OSS_DOMAIN || "http://localhost:44329";
+          const domain = ossDomain.endsWith("/") ? ossDomain.slice(0, -1) : ossDomain;
+          const path = avatarPath.startsWith("/") ? avatarPath : "/" + avatarPath;
+          avatar = domain + path;
+        }
+      } else {
+        avatar = "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
+      }
+
+      const userInfo: UserInfo = {
+        userId: userObj.id,
+        username: userObj.userName,
+        nickname: userObj.name,
+        avatar,
+        roles: userObj.roles || [],
+        perms: userObj.perms || [],
+      };
+      return userInfo;
     });
   },
 
@@ -139,9 +165,37 @@ const UserAPI = {
 
   /** 获取个人中心用户信息 */
   getProfile() {
-    return request<any, UserProfileVO>({
-      url: `${USER_BASE_URL}/profile`,
+    return request<any, any>({
+      url: `/api/account/my-profile`,
       method: "get",
+    }).then((userObj) => {
+      // 头像处理
+      const avatarPath = userObj.extraProperties?.Avatar;
+      let avatar = "";
+      if (avatarPath) {
+        if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
+          avatar = avatarPath;
+        } else {
+          const ossDomain = import.meta.env.VITE_OSS_DOMAIN || "http://localhost:44329";
+          const domain = ossDomain.endsWith("/") ? ossDomain.slice(0, -1) : ossDomain;
+          const path = avatarPath.startsWith("/") ? avatarPath : "/" + avatarPath;
+          avatar = domain + path;
+        }
+      } else {
+        avatar = "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
+      }
+
+      const profileVO: UserProfileVO = {
+        id: userObj.id,
+        username: userObj.userName,
+        nickname: userObj.name,
+        email: userObj.email,
+        mobile: userObj.phoneNumber,
+        avatar,
+        roleNames: userObj.roleNames,
+        deptName: userObj.deptName,
+      };
+      return profileVO;
     });
   },
 

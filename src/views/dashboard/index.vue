@@ -353,8 +353,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import { dayjs } from "element-plus";
-import LogAPI, { VisitStatsVO, VisitTrendVO } from "@/api/system/log-api";
+import { VisitStatsVO } from "@/api/system/log-api";
 import { useUserStore } from "@/store/modules/user-store";
 import { formatGrowthRate } from "@/utils";
 import { useTransition, useDateFormat } from "@vueuse/core";
@@ -493,99 +492,99 @@ const visitTrendChartOptions = ref();
  * 获取访客统计数据
  */
 const fetchVisitStatsData = () => {
-  LogAPI.getVisitStats()
-    .then((data) => {
-      visitStatsData.value = data;
-    })
-    .finally(() => {
-      visitStatsLoading.value = false;
-    });
+  // LogAPI.getVisitStats()
+  //   .then((data) => {
+  //     visitStatsData.value = data;
+  //   })
+  //   .finally(() => {
+  //     visitStatsLoading.value = false;
+  //   });
+  visitStatsLoading.value = false;
 };
 
 /**
  * 获取访问趋势数据，并更新图表配置
  */
 const fetchVisitTrendData = () => {
-  const startDate = dayjs()
-    .subtract(visitTrendDateRange.value - 1, "day")
-    .toDate();
-  const endDate = new Date();
-
-  LogAPI.getVisitTrend({
-    startDate: dayjs(startDate).format("YYYY-MM-DD"),
-    endDate: dayjs(endDate).format("YYYY-MM-DD"),
-  }).then((data) => {
-    updateVisitTrendChartOptions(data);
-  });
+  // const startDate = dayjs()
+  //   .subtract(visitTrendDateRange.value - 1, "day")
+  //   .toDate();
+  // const endDate = new Date();
+  // LogAPI.getVisitTrend({
+  //   startDate: dayjs(startDate).format("YYYY-MM-DD"),
+  //   endDate: dayjs(endDate).format("YYYY-MM-DD"),
+  // }).then((data) => {
+  //   updateVisitTrendChartOptions(data);
+  // });
 };
 
-/**
- * 更新访问趋势图表的配置项
- *
- * @param data - 访问趋势数据
- */
-const updateVisitTrendChartOptions = (data: VisitTrendVO) => {
-  visitTrendChartOptions.value = {
-    tooltip: {
-      trigger: "axis",
-    },
-    legend: {
-      data: ["浏览量(PV)", "访客数(UV)"],
-      bottom: 0,
-    },
-    grid: {
-      left: "1%",
-      right: "5%",
-      bottom: "10%",
-      containLabel: true,
-    },
-    xAxis: {
-      type: "category",
-      data: data.dates,
-    },
-    yAxis: {
-      type: "value",
-      splitLine: {
-        show: true,
-        lineStyle: {
-          type: "dashed",
-        },
-      },
-    },
-    series: [
-      {
-        name: "浏览量(PV)",
-        type: "line",
-        data: data.pvList,
-        areaStyle: {
-          color: "rgba(64, 158, 255, 0.1)",
-        },
-        smooth: true,
-        itemStyle: {
-          color: "#4080FF",
-        },
-        lineStyle: {
-          color: "#4080FF",
-        },
-      },
-      {
-        name: "访客数(UV)",
-        type: "line",
-        data: data.ipList,
-        areaStyle: {
-          color: "rgba(103, 194, 58, 0.1)",
-        },
-        smooth: true,
-        itemStyle: {
-          color: "#67C23A",
-        },
-        lineStyle: {
-          color: "#67C23A",
-        },
-      },
-    ],
-  };
-};
+// /**
+//  * 更新访问趋势图表的配置项
+//  *
+//  * @param data - 访问趋势数据
+//  */
+// const updateVisitTrendChartOptions = (data: any) => {
+//   visitTrendChartOptions.value = {
+//     tooltip: {
+//       trigger: "axis",
+//     },
+//     legend: {
+//       data: ["浏览量(PV)", "访客数(UV)"],
+//       bottom: 0,
+//     },
+//     grid: {
+//       left: "1%",
+//       right: "5%",
+//       bottom: "10%",
+//       containLabel: true,
+//     },
+//     xAxis: {
+//       type: "category",
+//       data: data.dates,
+//     },
+//     yAxis: {
+//       type: "value",
+//       splitLine: {
+//         show: true,
+//         lineStyle: {
+//           type: "dashed",
+//         },
+//       },
+//     },
+//     series: [
+//       {
+//         name: "浏览量(PV)",
+//         type: "line",
+//         data: data.pvList,
+//         areaStyle: {
+//           color: "rgba(64, 158, 255, 0.1)",
+//         },
+//         smooth: true,
+//         itemStyle: {
+//           color: "#4080FF",
+//         },
+//         lineStyle: {
+//           color: "#4080FF",
+//         },
+//       },
+//       {
+//         name: "访客数(UV)",
+//         type: "line",
+//         data: data.ipList,
+//         areaStyle: {
+//           color: "rgba(103, 194, 58, 0.1)",
+//         },
+//         smooth: true,
+//         itemStyle: {
+//           color: "#67C23A",
+//         },
+//         lineStyle: {
+//           color: "#67C23A",
+//         },
+//       },
+//     ],
+//   };
+// };
 
 /**
  * 根据增长率计算对应的 CSS 类名

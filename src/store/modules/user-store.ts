@@ -48,11 +48,12 @@ export const useUserStore = defineStore("user", () => {
     return new Promise<UserInfo>((resolve, reject) => {
       UserAPI.getInfo()
         .then((data) => {
+          console.log(" getUserInfo  获取用户信息成功", data);
           if (!data) {
             reject("Verification failed, please Login again.");
             return;
           }
-          Object.assign(userInfo.value, { ...data });
+          userInfo.value = data;
           resolve(data);
         })
         .catch((error) => {
