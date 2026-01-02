@@ -49,6 +49,54 @@ export const usePermissionStore = defineStore("permission", () => {
             },
           ],
         },
+        {
+          path: "/user-manager",
+          component: "Layout",
+          redirect: "/user-manager/list",
+          name: "UserManager",
+          meta: { title: "用户管理", icon: "el-icon-User", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/user/index",
+              name: "UserList",
+              meta: { title: "用户列表", icon: "el-icon-User" },
+              children: [],
+            },
+          ],
+        },
+        {
+          path: "/auth-manager",
+          component: "Layout",
+          redirect: "/auth-manager/list",
+          name: "AuthManager",
+          meta: { title: "授权管理", icon: "el-icon-Lock", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/role/index",
+              name: "AuthList",
+              meta: { title: "授权列表", icon: "el-icon-Lock" },
+              children: [],
+            },
+          ],
+        },
+        {
+          path: "/notice-manager",
+          component: "Layout",
+          redirect: "/notice-manager/list",
+          name: "NoticeManager",
+          meta: { title: "消息通知管理", icon: "el-icon-Bell", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/notice/index",
+              name: "NoticeList",
+              meta: { title: "消息通知列表", icon: "el-icon-Bell" },
+              children: [],
+            },
+          ],
+        },
       ];
       const dynamicRoutes = transformRoutes(data);
 
