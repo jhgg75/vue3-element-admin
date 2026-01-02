@@ -97,6 +97,38 @@ export const usePermissionStore = defineStore("permission", () => {
             },
           ],
         },
+        {
+          path: "/role-manager",
+          component: "Layout",
+          redirect: "/role-manager/list",
+          name: "RoleManager",
+          meta: { title: "角色管理", icon: "el-icon-Avatar", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/role/index",
+              name: "RoleList",
+              meta: { title: "角色列表", icon: "el-icon-Avatar" },
+              children: [],
+            },
+          ],
+        },
+        {
+          path: "/menu-manager",
+          component: "Layout",
+          redirect: "/menu-manager/list",
+          name: "MenuManager",
+          meta: { title: "菜单管理", icon: "el-icon-Menu", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/menu/index",
+              name: "MenuList",
+              meta: { title: "菜单列表", icon: "el-icon-Menu" },
+              children: [],
+            },
+          ],
+        },
       ];
       const dynamicRoutes = transformRoutes(data);
 
