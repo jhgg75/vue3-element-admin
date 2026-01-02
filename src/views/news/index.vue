@@ -17,9 +17,27 @@
             placeholder="请选择状态"
             clearable
             style="width: 200px"
+            @change="handleQuery"
           >
             <el-option label="已发布" :value="1" />
             <el-option label="草稿" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分类" prop="categoryId">
+          <el-select
+            v-model="queryParams.categoryId"
+            placeholder="请选择分类"
+            clearable
+            filterable
+            style="width: 200px"
+            @change="handleQuery"
+          >
+            <el-option
+              v-for="item in categoryList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -39,16 +57,16 @@
       <el-table v-loading="loading" :data="newsList" border>
         <el-table-column label="标题" align="center" min-width="200" show-overflow-tooltip>
           <template #default="scope">
-            {{ scope.row.title || scope.row.Title }}
+            {{ scope.row.title }}
           </template>
         </el-table-column>
         <el-table-column label="封面" align="center" width="100">
           <template #default="scope">
             <el-image
-              v-if="scope.row.coverUrl || scope.row.CoverUrl"
-              :src="getCoverUrl(scope.row.coverUrl || scope.row.CoverUrl)"
+              v-if="scope.row.coverUrl"
+              :src="getCoverUrl(scope.row.coverUrl)"
               style="width: 50px; height: 50px"
-              :preview-src-list="[getCoverUrl(scope.row.coverUrl || scope.row.CoverUrl)]"
+              :preview-src-list="[getCoverUrl(scope.row.coverUrl)]"
               preview-teleported
             />
           </template>
@@ -114,6 +132,7 @@ import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox, type FormInstance } from "element-plus";
 import { Search, Plus, Edit, Delete, Refresh } from "@element-plus/icons-vue";
 import NewsAPI, { type NewsQuery, type NewsVO } from "@/api/news-api";
+import CategoryAPI, { type CategoryVO } from "@/api/category-api";
 
 const router = useRouter();
 const queryFormRef = ref<FormInstance>();
@@ -125,12 +144,14 @@ const state = reactive({
     pageSize: 10,
     title: "",
     status: undefined,
+    categoryId: undefined,
   } as NewsQuery,
   newsList: [] as NewsVO[],
+  categoryList: [] as CategoryVO[],
   total: 0,
 });
 
-const { loading, queryParams, newsList, total } = toRefs(state);
+const { loading, queryParams, newsList, categoryList, total } = toRefs(state);
 
 function handleQuery() {
   state.loading = true;
@@ -146,9 +167,16 @@ function handleQuery() {
     });
 }
 
+function getCategoryList() {
+  CategoryAPI.getPage({ pageNum: 1, pageSize: 100 }).then((response: any) => {
+    state.categoryList = response.items || response.list || [];
+  });
+}
+
 function handleReset() {
   queryFormRef.value?.resetFields();
   state.queryParams.pageNum = 1;
+  state.queryParams.categoryId = undefined;
   handleQuery();
 }
 
@@ -192,6 +220,7 @@ function getCoverUrl(coverUrl: string) {
 }
 
 onMounted(() => {
+  getCategoryList();
   handleQuery();
 });
 </script>
