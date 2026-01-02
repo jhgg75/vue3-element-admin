@@ -2,8 +2,6 @@ import type { RouteRecordRaw } from "vue-router";
 import { constantRoutes } from "@/router";
 import { store } from "@/store";
 import router from "@/router";
-
-import MenuAPI, { type RouteVO } from "@/api/system/menu-api";
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("../../layouts/index.vue");
 
@@ -24,21 +22,29 @@ export const usePermissionStore = defineStore("permission", () => {
         {
           path: "/news",
           component: "Layout",
+          redirect: "/news/index",
           name: "News",
-          meta: { title: "新闻管理", icon: "system" },
+          meta: { title: "新闻管理", icon: "system", alwaysShow: true },
           children: [
             {
-              path: "list",
+              path: "index",
               component: "news/index",
               name: "NewsList",
               meta: { title: "新闻列表", icon: "document" },
               children: [],
             },
             {
+              path: "category",
+              component: "category/index",
+              name: "CategoryList",
+              meta: { title: "分类列表", icon: "tree" },
+              children: [],
+            },
+            {
               path: "create",
               component: "news/create",
               name: "NewsCreate",
-              meta: { title: "新增新闻", hidden: true, activeMenu: "/news/list" },
+              meta: { title: "新增新闻", hidden: true, activeMenu: "/news/index" },
               children: [],
             },
           ],

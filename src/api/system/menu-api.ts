@@ -132,4 +132,6 @@ export interface Meta {
   keepAlive?: boolean;
   /** 路由title */
   title?: string;
+  /** 激活的菜单路径，用于高亮父级菜单 */
+  activeMenu?: string;
 }
