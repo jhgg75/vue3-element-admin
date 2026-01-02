@@ -7,7 +7,7 @@ const mediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
 
 export const defaultSettings: AppSettings = {
   // 系统Title
-  title: pkg.name,
+  title: "新闻后台管理系统",
   // 系统版本
   version: pkg.version,
   // 是否显示设置

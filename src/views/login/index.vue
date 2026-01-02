@@ -23,11 +23,7 @@
           <el-image :src="logo" style="width: 84px" />
 
           <!-- 标题 -->
-          <h2>
-            <el-badge :value="`v ${defaultSettings.version}`" type="success">
-              {{ defaultSettings.title }}
-            </el-badge>
-          </h2>
+          <h2 class="text-2xl font-bold mb-6">{{ defaultSettings.title }}</h2>
 
           <!-- 组件切换 -->
           <transition name="fade-slide" mode="out-in">
