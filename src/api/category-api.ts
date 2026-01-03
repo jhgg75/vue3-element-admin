@@ -29,7 +29,7 @@ const CategoryAPI = {
     const params = {
       SkipCount: (queryParams.pageNum - 1) * queryParams.pageSize,
       MaxResultCount: queryParams.pageSize,
-      Sorting: "CreationTime",
+      Sorting: "SortOrder ASC",
       Filter: queryParams.keywords,
     };
 
