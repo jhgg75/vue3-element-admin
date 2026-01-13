@@ -129,6 +129,22 @@ export const usePermissionStore = defineStore("permission", () => {
             },
           ],
         },
+        {
+          path: "/version-manager",
+          component: "Layout",
+          redirect: "/version-manager/list",
+          name: "VersionManager",
+          meta: { title: "版本管理", icon: "el-icon-PriceTag", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "version/index",
+              name: "VersionList",
+              meta: { title: "版本列表", icon: "el-icon-PriceTag" },
+              children: [],
+            },
+          ],
+        },
       ];
       const dynamicRoutes = transformRoutes(data);
 
