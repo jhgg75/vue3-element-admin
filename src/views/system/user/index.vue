@@ -156,7 +156,7 @@
                 <el-button link type="primary" size="small" @click="hancleResetPassword(row)">
                   重置密码
                 </el-button>
-                <el-button link type="primary" size="small" @click="handleOpenDialog(row.id)">
+                <el-button link type="primary" size="small" @click="handleOpenDialog(row)">
                   编辑
                 </el-button>
                 <el-button link type="warning" size="small" @click="handleToggleActive(row)">
@@ -395,25 +395,51 @@ async function handleToggleActive(row: UserPageVO) {
   }
 }
 
-/**
- * 打开弹窗
- *
- * @param id 用户ID
- */
-async function handleOpenDialog(id?: string) {
+async function handleOpenDialog(row?: UserPageVO) {
   dialog.visible = true;
-  // 加载角色下拉数据源
-  roleOptions.value = await RoleAPI.getOptions();
-  // 加载部门下拉数据源
-  deptOptions.value = await DeptAPI.getOptions();
 
-  if (id) {
-    dialog.title = "编辑用户信息";
-    UserAPI.getFormData(id).then((data) => {
-      Object.assign(formData, { ...data });
+  if (row && row.id) {
+    dialog.title = "编辑用户";
+    Object.assign(formData, {
+      id: row.id,
+      username: row.username,
+      nickname: row.nickname,
+      mobile: row.mobile,
+      email: row.email,
+      isActive: row.isActive,
+      status: row.status,
     });
   } else {
     dialog.title = "新增用户";
+    Object.assign(formData, {
+      id: undefined,
+      username: "",
+      nickname: "",
+      mobile: "",
+      email: "",
+      deptId: undefined,
+      roleIds: [],
+      gender: undefined,
+      isActive: true,
+      status: 1,
+      avatar: "",
+    });
+  }
+
+  try {
+    roleOptions.value = await RoleAPI.getOptions();
+    deptOptions.value = await DeptAPI.getOptions();
+  } catch (error) {
+    console.error("加载用户下拉数据源失败", error);
+  }
+
+  if (row && row.id) {
+    try {
+      const data = await UserAPI.getFormData(row.id);
+      Object.assign(formData, { ...data });
+    } catch (error) {
+      console.error("获取用户表单详情失败", error);
+    }
   }
 }
 
