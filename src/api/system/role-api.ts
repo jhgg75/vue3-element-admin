@@ -56,7 +56,7 @@ const RoleAPI = {
   /** 新增角色 */
   create(data: RoleForm) {
     const payload = {
-      name: data.name || data.code || "",
+      name: data.name || "",
       isDefault: false,
       isPublic: true,
     };
