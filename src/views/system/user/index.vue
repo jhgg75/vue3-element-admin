@@ -130,10 +130,10 @@
             <!-- <el-table-column label="部门" width="120" align="center" prop="deptName" /> -->
             <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
             <el-table-column label="邮箱" align="center" prop="email" width="160" />
-            <el-table-column label="状态" align="center" prop="status" width="80">
+            <el-table-column label="状态" align="center" prop="isActive" width="80">
               <template #default="scope">
-                <el-tag :type="scope.row.status == 1 ? 'success' : 'info'">
-                  {{ scope.row.status == 1 ? "正常" : "禁用" }}
+                <el-tag :type="scope.row.isActive ? 'success' : 'info'">
+                  {{ scope.row.isActive ? "启用" : "禁用" }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -244,14 +244,14 @@
           <el-input v-model="formData.email" placeholder="请输入邮箱" maxlength="50" />
         </el-form-item>
 
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态" prop="isActive">
           <el-switch
-            v-model="formData.status"
+            v-model="formData.isActive"
             inline-prompt
-            active-text="正常"
+            active-text="启用"
             inactive-text="禁用"
-            :active-value="1"
-            :inactive-value="0"
+            :active-value="true"
+            :inactive-value="false"
           />
         </el-form-item>
       </el-form>
@@ -309,7 +309,7 @@ const dialog = reactive({
 const drawerSize = computed(() => (appStore.device === DeviceEnum.DESKTOP ? "600px" : "90%"));
 
 const formData = reactive<UserForm>({
-  status: 1,
+  isActive: true,
 });
 
 const rules = reactive({

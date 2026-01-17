@@ -58,6 +58,9 @@ const UserAPI = {
     if (queryParams.phoneNumber) {
       params.PhoneNumber = queryParams.phoneNumber;
     }
+    if (typeof queryParams.status === "number") {
+      params.IsActive = queryParams.status === 1;
+    }
     if (!params.UserName && queryParams.keywords) {
       params.UserName = queryParams.keywords;
     }
@@ -75,6 +78,8 @@ const UserAPI = {
         mobile: item.phoneNumber,
         avatar: item.avatar,
         roleNames: Array.isArray(item.roles) ? item.roles.join(",") : item.roles,
+        isActive: item.isActive,
+        status: item.isActive ? 1 : 0,
         createTime: item.creationTime,
       }));
 
@@ -379,6 +384,8 @@ export interface UserPageVO {
   nickname?: string;
   /** 角色名称，多个使用英文逗号(,)分割 */
   roleNames?: string;
+  /** 是否启用 */
+  isActive?: boolean;
   /** 用户状态(1:启用;0:禁用) */
   status?: number;
   /** 用户名 */
@@ -403,6 +410,8 @@ export interface UserForm {
   nickname?: string;
   /** 角色ID集合 */
   roleIds?: number[];
+  /** 是否启用 */
+  isActive?: boolean;
   /** 用户状态(1:正常;0:禁用) */
   status?: number;
   /** 用户名 */
@@ -500,6 +509,7 @@ export interface UserListItemDTO {
   phoneNumber: string;
   avatar: string;
   roles: string[];
+  isActive: boolean;
   creationTime: string;
 }
 
