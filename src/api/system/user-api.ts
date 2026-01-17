@@ -41,16 +41,36 @@ const UserAPI = {
     });
   },
 
-  /**
-   * 获取用户分页列表
-   *
-   * @param queryParams 查询参数
-   */
-  getPage(queryParams: UserPageQuery) {
-    return request<any, PageResult<UserPageVO[]>>({
-      url: `${USER_BASE_URL}/page`,
+  getPage(queryParams: UserPageQuery): Promise<PageResult<UserPageVO[]>> {
+    const params: any = {
+      SkipCount: (queryParams.pageNum - 1) * queryParams.pageSize,
+      MaxResultCount: queryParams.pageSize,
+    };
+
+    if (queryParams.keywords) {
+      params.UserName = queryParams.keywords;
+    }
+
+    return request<any, UserListResponse>({
+      url: `/api/users`,
       method: "get",
-      params: queryParams,
+      params,
+    }).then((res) => {
+      const list: UserPageVO[] = (res.items || []).map((item) => ({
+        id: item.id,
+        username: item.userName,
+        nickname: item.nickName,
+        email: item.email,
+        mobile: item.phoneNumber,
+        avatar: item.avatar,
+        roleNames: Array.isArray(item.roles) ? item.roles.join(",") : item.roles,
+        createTime: item.creationTime,
+      }));
+
+      return {
+        list,
+        total: res.totalCount ?? 0,
+      };
     });
   },
 
@@ -435,4 +455,20 @@ export interface EmailUpdateForm {
   email?: string;
   /** 验证码 */
   code?: string;
+}
+
+export interface UserListItemDTO {
+  id: string;
+  userName: string;
+  nickName: string;
+  email: string;
+  phoneNumber: string;
+  avatar: string;
+  roles: string[];
+  creationTime: string;
+}
+
+export interface UserListResponse {
+  items: UserListItemDTO[];
+  totalCount: number;
 }
