@@ -70,6 +70,7 @@
             <el-form-item class="search-buttons">
               <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
               <el-button icon="refresh" @click="handleResetQuery">重置</el-button>
+              <el-button type="success" icon="plus" @click="handleOpenDialog()">新增</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -84,6 +85,14 @@
                 @click="handleOpenDialog()"
               >
                 新增
+              </el-button>
+              <el-button
+                v-hasPerm="['sys:user:add']"
+                type="primary"
+                icon="plus"
+                @click="handleOpenDialog()"
+              >
+                新增用户
               </el-button>
               <el-button
                 v-hasPerm="'sys:user:delete'"
@@ -172,11 +181,11 @@
     </el-row>
 
     <!-- 用户表单 -->
-    <el-drawer
+    <el-dialog
       v-model="dialog.visible"
       :title="dialog.title"
       append-to-body
-      :size="drawerSize"
+      :width="drawerSize"
       @close="handleCloseDialog"
     >
       <el-form ref="userFormRef" :model="formData" :rules="rules" label-width="80px">
@@ -244,7 +253,7 @@
           <el-button @click="handleCloseDialog">取 消</el-button>
         </div>
       </template>
-    </el-drawer>
+    </el-dialog>
 
     <!-- 用户导入 -->
     <UserImport v-model="importDialogVisible" @import-success="handleQuery()" />
@@ -361,20 +370,15 @@ function hancleResetPassword(row: UserPageVO) {
   ElMessageBox.prompt("请输入用户【" + row.username + "】的新密码", "重置密码", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
-  }).then(
-    ({ value }) => {
-      if (!value || value.length < 6) {
-        ElMessage.warning("密码至少需要6位字符，请重新输入");
-        return false;
-      }
-      UserAPI.resetPassword(row.id, value).then(() => {
-        ElMessage.success("密码重置成功，新密码是：" + value);
-      });
-    },
-    () => {
-      ElMessage.info("已取消重置密码");
+  }).then(({ value }) => {
+    if (!value || value.length < 6) {
+      ElMessage.warning("密码至少需要6位字符，请重新输入");
+      return false;
     }
-  );
+    UserAPI.resetPassword(row.id, value).then(() => {
+      ElMessage.success("密码重置成功，新密码是：" + value);
+    });
+  });
 }
 
 async function handleToggleActive(row: UserPageVO) {
@@ -404,7 +408,7 @@ async function handleOpenDialog(id?: string) {
   deptOptions.value = await DeptAPI.getOptions();
 
   if (id) {
-    dialog.title = "修改用户";
+    dialog.title = "编辑用户信息";
     UserAPI.getFormData(id).then((data) => {
       Object.assign(formData, { ...data });
     });
