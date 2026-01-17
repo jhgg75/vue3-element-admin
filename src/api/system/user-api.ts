@@ -65,6 +65,9 @@ const UserAPI = {
       params.creationTimeStart = creationTimeStart;
       params.creationTimeEnd = creationTimeEnd;
     }
+    if (queryParams.sorting) {
+      params.Sorting = queryParams.sorting;
+    }
 
     return request<any, UserListResponse>({
       url: `/api/users`,
@@ -375,6 +378,9 @@ export interface UserPageQuery extends PageQuery {
 
   /** 开始时间 */
   createTime?: [string, string];
+
+  /** 排序字段 */
+  sorting?: string;
 }
 
 /** 用户分页对象 */

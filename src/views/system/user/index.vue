@@ -127,6 +127,7 @@
             highlight-current-row
             class="data-table__content"
             @selection-change="handleSelectionChange"
+            @sort-change="handleSortChange"
           >
             <el-table-column type="selection" width="50" align="center" />
             <el-table-column label="头像" width="80" align="center">
@@ -161,7 +162,13 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="创建时间" align="center" width="180">
+            <el-table-column
+              label="创建时间"
+              prop="createTime"
+              align="center"
+              width="180"
+              sortable="custom"
+            >
               <template #default="scope">
                 {{ useDateFormat(scope.row.createTime, "YYYY-MM-DD HH:mm:ss").value }}
               </template>
@@ -344,6 +351,22 @@ async function fetchData() {
 
 // 查询（重置页码后获取数据）
 function handleQuery() {
+  queryParams.pageNum = 1;
+  fetchData();
+}
+
+function handleSortChange({
+  prop,
+  order,
+}: {
+  prop: string;
+  order: "ascending" | "descending" | null;
+}) {
+  if (prop === "createTime" && order) {
+    queryParams.sorting = `creationTime ${order === "ascending" ? "asc" : "desc"}`;
+  } else {
+    queryParams.sorting = undefined;
+  }
   queryParams.pageNum = 1;
   fetchData();
 }
