@@ -129,6 +129,11 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="50" align="center" />
+            <el-table-column label="头像" width="80" align="center">
+              <template #default="scope">
+                <el-avatar :src="scope.row.avatar" size="small" />
+              </template>
+            </el-table-column>
             <el-table-column label="用户名" prop="username" />
             <el-table-column label="昵称" width="150" align="center" prop="nickname" />
             <el-table-column label="角色" align="center" min-width="160">

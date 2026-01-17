@@ -2,31 +2,27 @@ import request from "@/utils/request";
 
 const USER_BASE_URL = "/api/v1/users";
 
+function buildAvatarUrl(avatarPath?: string): string {
+  if (!avatarPath) {
+    return "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
+  }
+  if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
+    return avatarPath;
+  }
+  const ossDomain = import.meta.env.VITE_OSS_DOMAIN || "http://localhost:44329";
+  const domain = ossDomain.endsWith("/") ? ossDomain.slice(0, -1) : ossDomain;
+  const path = avatarPath.startsWith("/") ? avatarPath : "/" + avatarPath;
+  return domain + path;
+}
+
 const UserAPI = {
-  /**
-   * 获取当前登录用户信息
-   *
-   * @returns 登录用户昵称、头像信息，包括角色和权限
-   */
   getInfo() {
     return request<any, MyProfileResponse>({
       url: `/api/account/my-profile`,
       method: "get",
     }).then((userObj) => {
       const avatarPath = userObj.extraProperties?.Avatar;
-      let avatar = "";
-      if (avatarPath) {
-        if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
-          avatar = avatarPath;
-        } else {
-          const ossDomain = import.meta.env.VITE_OSS_DOMAIN || "http://localhost:44329";
-          const domain = ossDomain.endsWith("/") ? ossDomain.slice(0, -1) : ossDomain;
-          const path = avatarPath.startsWith("/") ? avatarPath : "/" + avatarPath;
-          avatar = domain + path;
-        }
-      } else {
-        avatar = "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
-      }
+      const avatar = buildAvatarUrl(avatarPath);
 
       const userInfo: UserInfo = {
         userId: userObj.id,
@@ -76,7 +72,7 @@ const UserAPI = {
         nickname: item.nickName,
         email: item.email,
         mobile: item.phoneNumber,
-        avatar: item.avatar,
+        avatar: buildAvatarUrl(item.avatar),
         roles: item.roles || [],
         roleNames: Array.isArray(item.roles) ? item.roles.join(",") : item.roles,
         isActive: item.isActive,
@@ -217,21 +213,8 @@ const UserAPI = {
       url: `/api/account/my-profile`,
       method: "get",
     }).then((userObj) => {
-      // 头像处理
       const avatarPath = userObj.extraProperties?.Avatar;
-      let avatar = "";
-      if (avatarPath) {
-        if (avatarPath.startsWith("http") || avatarPath.startsWith("https")) {
-          avatar = avatarPath;
-        } else {
-          const ossDomain = import.meta.env.VITE_OSS_DOMAIN || "http://localhost:44329";
-          const domain = ossDomain.endsWith("/") ? ossDomain.slice(0, -1) : ossDomain;
-          const path = avatarPath.startsWith("/") ? avatarPath : "/" + avatarPath;
-          avatar = domain + path;
-        }
-      } else {
-        avatar = "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png";
-      }
+      const avatar = buildAvatarUrl(avatarPath);
 
       const profileVO: UserProfileVO = {
         id: userObj.id,
