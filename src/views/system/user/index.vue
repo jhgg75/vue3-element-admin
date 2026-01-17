@@ -142,40 +142,22 @@
                 {{ useDateFormat(scope.row.createTime, "YYYY-MM-DD HH:mm:ss").value }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="220">
-              <template #default="scope">
-                <el-button
-                  v-hasPerm="'sys:user:reset-password'"
-                  type="primary"
-                  icon="RefreshLeft"
-                  size="small"
-                  link
-                  @click="hancleResetPassword(scope.row)"
-                >
+            <OperationColumn :list-data-length="pageData?.length || 0">
+              <template #default="{ row }">
+                <el-button link type="primary" size="small" @click="hancleResetPassword(row)">
                   重置密码
                 </el-button>
-                <el-button
-                  v-hasPerm="'sys:user:edit'"
-                  type="primary"
-                  icon="edit"
-                  link
-                  size="small"
-                  @click="handleOpenDialog(scope.row.id)"
-                >
+                <el-button link type="primary" size="small" @click="handleOpenDialog(row.id)">
                   编辑
                 </el-button>
-                <el-button
-                  v-hasPerm="'sys:user:delete'"
-                  type="danger"
-                  icon="delete"
-                  link
-                  size="small"
-                  @click="handleDelete(scope.row.id)"
-                >
+                <el-button link type="warning" size="small" @click="handleToggleActive(row)">
+                  {{ row.isActive ? "禁用" : "启用" }}
+                </el-button>
+                <el-button link type="danger" size="small" @click="handleDelete(row.id)">
                   删除
                 </el-button>
               </template>
-            </el-table-column>
+            </OperationColumn>
           </el-table>
 
           <pagination
@@ -279,6 +261,7 @@ import DeptAPI from "@/api/system/dept-api";
 import RoleAPI from "@/api/system/role-api";
 
 import UserImport from "./components/UserImport.vue";
+import OperationColumn from "@/components/OperationColumn/index.vue";
 import { useUserStore } from "@/store";
 import { useDateFormat } from "@vueuse/core";
 const userStore = useUserStore();
@@ -374,7 +357,6 @@ function handleSelectionChange(selection: any[]) {
   selectIds.value = selection.map((item) => item.id);
 }
 
-// 重置密码
 function hancleResetPassword(row: UserPageVO) {
   ElMessageBox.prompt("请输入用户【" + row.username + "】的新密码", "重置密码", {
     confirmButtonText: "确定",
@@ -393,6 +375,20 @@ function hancleResetPassword(row: UserPageVO) {
       ElMessage.info("已取消重置密码");
     }
   );
+}
+
+async function handleToggleActive(row: UserPageVO) {
+  const targetIsActive = !row.isActive;
+  const text = targetIsActive ? "启用" : "禁用";
+  loading.value = true;
+  try {
+    const form = await UserAPI.getFormData(row.id);
+    await UserAPI.update(row.id, { ...form, isActive: targetIsActive });
+    ElMessage.success(text + "成功");
+    await fetchData();
+  } finally {
+    loading.value = false;
+  }
 }
 
 /**
@@ -424,7 +420,7 @@ function handleCloseDialog() {
   userFormRef.value.clearValidate();
 
   formData.id = undefined;
-  formData.status = 1;
+  formData.isActive = true;
 }
 
 // 提交用户表单（防抖）
