@@ -1,14 +1,40 @@
 import request from "@/utils/request";
 
-const ROLE_BASE_URL = "/api/v1/roles";
+const ROLE_BASE_URL = "/api/identity/roles";
 
 const RoleAPI = {
   /** 获取角色分页数据 */
-  getPage(queryParams?: RolePageQuery) {
-    return request<any, PageResult<RolePageVO[]>>({
-      url: `${ROLE_BASE_URL}/page`,
+  getPage(queryParams: RolePageQuery) {
+    const params: any = {
+      SkipCount: (queryParams.pageNum - 1) * queryParams.pageSize,
+      MaxResultCount: queryParams.pageSize,
+    };
+
+    if (queryParams.keywords) {
+      params.Filter = queryParams.keywords;
+    }
+
+    if (queryParams.sorting) {
+      params.Sorting = queryParams.sorting;
+    }
+
+    return request<any, any>({
+      url: `${ROLE_BASE_URL}`,
       method: "get",
-      params: queryParams,
+      params,
+    }).then((res) => {
+      const list: RolePageVO[] = (res.items || []).map((item: any) => ({
+        id: item.id,
+        code: item.name,
+        name: item.displayName ?? item.name,
+        status: item.isDefault ? 1 : 1,
+        createTime: item.creationTime,
+      }));
+
+      return {
+        list,
+        total: res.totalCount ?? 0,
+      } as PageResult<RolePageVO[]>;
     });
   },
   /** 获取角色下拉数据源 */
@@ -46,6 +72,9 @@ export default RoleAPI;
 export interface RolePageQuery extends PageQuery {
   /** 搜索关键字 */
   keywords?: string;
+
+  /** 排序字段 */
+  sorting?: string;
 }
 export interface RolePageVO {
   /** 角色ID */
