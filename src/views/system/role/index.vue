@@ -72,7 +72,7 @@
               size="small"
               link
               icon="edit"
-              @click="handleOpenDialog(scope.row.id)"
+              @click="handleOpenDialog(scope.row)"
             >
               编辑
             </el-button>
@@ -274,15 +274,16 @@ function handleSelectionChange(selection: any) {
 }
 
 // 打开角色弹窗
-function handleOpenDialog(roleId?: string) {
+function handleOpenDialog(row?: RolePageVO) {
   dialog.visible = true;
-  if (roleId) {
+  if (row && row.id) {
     dialog.title = "修改角色";
-    RoleAPI.getFormData(roleId).then((data) => {
-      Object.assign(formData, data);
-    });
+    formData.id = row.id;
+    formData.name = row.name;
   } else {
     dialog.title = "新增角色";
+    formData.id = undefined;
+    formData.name = "";
   }
 }
 
