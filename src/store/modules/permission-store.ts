@@ -60,7 +60,7 @@ export const usePermissionStore = defineStore("permission", () => {
               path: "list",
               component: "system/user/index",
               name: "UserList",
-              meta: { title: "用户列表", icon: "el-icon-User" },
+              meta: { title: "用户列表", icon: "el-icon-User", hideDeptTree: true },
               children: [],
             },
           ],

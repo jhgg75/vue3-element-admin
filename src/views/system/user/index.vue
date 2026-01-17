@@ -3,12 +3,12 @@
   <div class="app-container">
     <el-row :gutter="20">
       <!-- 部门树 -->
-      <el-col :lg="4" :xs="24" class="mb-[12px]">
+      <el-col v-if="showDeptTree" :lg="4" :xs="24" class="mb-[12px]">
         <DeptTree v-model="queryParams.deptId" @node-click="handleQuery" />
       </el-col>
 
       <!-- 用户列表 -->
-      <el-col :lg="20" :xs="24">
+      <el-col :lg="showDeptTree ? 20 : 24" :xs="24">
         <!-- 搜索区域 -->
         <div class="search-container">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="auto">
@@ -246,6 +246,7 @@
 <script setup lang="ts">
 import { useAppStore } from "@/store/modules/app-store";
 import { DeviceEnum } from "@/enums/settings/device-enum";
+const route = useRoute();
 
 import UserAPI, { UserForm, UserPageQuery, UserPageVO } from "@/api/system/user-api";
 import DeptAPI from "@/api/system/dept-api";
@@ -261,6 +262,7 @@ defineOptions({
 });
 
 const appStore = useAppStore();
+const showDeptTree = computed(() => !route.meta?.hideDeptTree);
 
 const queryFormRef = ref();
 const userFormRef = ref();
