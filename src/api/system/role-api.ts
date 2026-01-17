@@ -55,7 +55,12 @@ const RoleAPI = {
   },
   /** 新增角色 */
   create(data: RoleForm) {
-    return request({ url: `${ROLE_BASE_URL}`, method: "post", data });
+    const payload = {
+      name: data.name || data.code || "",
+      isDefault: false,
+      isPublic: true,
+    };
+    return request({ url: `${ROLE_BASE_URL}`, method: "post", data: payload });
   },
   /** 更新角色 */
   update(id: string, data: RoleForm) {
