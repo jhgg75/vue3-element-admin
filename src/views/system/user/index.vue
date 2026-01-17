@@ -549,20 +549,15 @@ function handleDelete(id?: number) {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
-  }).then(
-    () => {
-      loading.value = true;
-      UserAPI.deleteByIds(userIds)
-        .then(() => {
-          ElMessage.success("删除成功");
-          handleResetQuery();
-        })
-        .finally(() => (loading.value = false));
-    },
-    () => {
-      ElMessage.info("已取消删除");
-    }
-  );
+  }).then(() => {
+    loading.value = true;
+    UserAPI.deleteByIds(userIds)
+      .then(() => {
+        ElMessage.success("删除成功");
+        handleResetQuery();
+      })
+      .finally(() => (loading.value = false));
+  });
 }
 
 // 打开导入弹窗
