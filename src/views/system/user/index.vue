@@ -201,21 +201,6 @@
           <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
         </el-form-item>
 
-        <el-form-item label="所属部门" prop="deptId">
-          <el-tree-select
-            v-model="formData.deptId"
-            placeholder="请选择所属部门"
-            :data="deptOptions"
-            filterable
-            check-strictly
-            :render-after-expand="false"
-          />
-        </el-form-item>
-
-        <el-form-item label="性别" prop="gender">
-          <Dict v-model="formData.gender" code="gender" />
-        </el-form-item>
-
         <el-form-item label="角色" prop="roleIds">
           <el-select v-model="formData.roleIds" multiple placeholder="请选择">
             <el-option
@@ -266,7 +251,6 @@ import { DeviceEnum } from "@/enums/settings/device-enum";
 const route = useRoute();
 
 import UserAPI, { UserForm, UserPageQuery, UserPageVO } from "@/api/system/user-api";
-import DeptAPI from "@/api/system/dept-api";
 import RoleAPI from "@/api/system/role-api";
 
 import UserImport from "./components/UserImport.vue";
@@ -307,7 +291,6 @@ const formData = reactive<UserForm>({
 const rules = reactive({
   username: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
   nickname: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
-  deptId: [{ required: true, message: "所属部门不能为空", trigger: "blur" }],
   roleIds: [{ required: true, message: "用户角色不能为空", trigger: "blur" }],
   email: [
     {
@@ -327,8 +310,6 @@ const rules = reactive({
 
 // 选中的用户ID
 const selectIds = ref<number[]>([]);
-// 部门下拉数据源
-const deptOptions = ref<OptionType[]>();
 // 角色下拉数据源
 const roleOptions = ref<OptionType[]>();
 // 导入弹窗显示状态
@@ -428,7 +409,6 @@ async function handleOpenDialog(row?: UserPageVO) {
 
   try {
     roleOptions.value = await RoleAPI.getOptions();
-    deptOptions.value = await DeptAPI.getOptions();
   } catch (error) {
     console.error("加载用户下拉数据源失败", error);
   }
