@@ -2,6 +2,7 @@ import type { RouteRecordRaw } from "vue-router";
 import { constantRoutes } from "@/router";
 import { store } from "@/store";
 import router from "@/router";
+import type { RouteVO } from "@/api/system/menu-api";
 const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = () => import("../../layouts/index.vue");
 

@@ -123,7 +123,7 @@ onMounted(async () => {
   // 如果是新增，id 为 undefined，不会进入 if 逻辑
   // 如果是修改，id 有值，进入 if 逻辑加载数据
   if (id) {
-    NewsAPI.getFormData(id).then((data) => {
+    NewsAPI.getFormData(id).then((data: any) => {
       // 兼容后端可能返回 PascalCase 或 camelCase 的情况
       formData.id = data.id || data.Id;
       formData.title = data.title || data.Title;

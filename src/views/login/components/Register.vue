@@ -98,7 +98,7 @@
 import type { FormInstance } from "element-plus";
 import { Lock } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
-import AuthAPI, { type LoginFormData } from "@/api/auth-api";
+import AuthAPI from "@/api/auth-api";
 
 const { t } = useI18n();
 
@@ -113,8 +113,13 @@ const isCapsLock = ref(false); // 是否大写锁定
 const captchaBase64 = ref(); // 验证码图片Base64字符串
 const isRead = ref(false);
 
-interface Model extends LoginFormData {
+interface Model {
+  username: string;
+  password: string;
   confirmPassword: string;
+  captchaKey: string;
+  captchaCode: string;
+  rememberMe: boolean;
 }
 
 const model = ref<Model>({

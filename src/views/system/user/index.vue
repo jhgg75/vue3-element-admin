@@ -2,20 +2,42 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!-- 部门树 -->
-      <el-col v-if="showDeptTree" :lg="4" :xs="24" class="mb-[12px]">
-        <DeptTree v-model="queryParams.deptId" @node-click="handleQuery" />
-      </el-col>
-
       <!-- 用户列表 -->
       <el-col :lg="showDeptTree ? 20 : 24" :xs="24">
         <!-- 搜索区域 -->
         <div class="search-container">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="auto">
-            <el-form-item label="关键字" prop="keywords">
+            <el-form-item label="用户名" prop="userName">
               <el-input
-                v-model="queryParams.keywords"
-                placeholder="用户名/昵称/手机号"
+                v-model="queryParams.userName"
+                placeholder="用户名"
+                clearable
+                @keyup.enter="handleQuery"
+              />
+            </el-form-item>
+
+            <el-form-item label="昵称" prop="name">
+              <el-input
+                v-model="queryParams.name"
+                placeholder="昵称"
+                clearable
+                @keyup.enter="handleQuery"
+              />
+            </el-form-item>
+
+            <el-form-item label="邮箱" prop="email">
+              <el-input
+                v-model="queryParams.email"
+                placeholder="邮箱"
+                clearable
+                @keyup.enter="handleQuery"
+              />
+            </el-form-item>
+
+            <el-form-item label="手机号码" prop="phoneNumber">
+              <el-input
+                v-model="queryParams.phoneNumber"
+                placeholder="手机号码"
                 clearable
                 @keyup.enter="handleQuery"
               />
@@ -100,12 +122,12 @@
             <el-table-column type="selection" width="50" align="center" />
             <el-table-column label="用户名" prop="username" />
             <el-table-column label="昵称" width="150" align="center" prop="nickname" />
-            <el-table-column label="性别" width="100" align="center">
+            <!-- <el-table-column label="性别" width="100" align="center">
               <template #default="scope">
                 <DictLabel v-model="scope.row.gender" code="gender" />
               </template>
-            </el-table-column>
-            <el-table-column label="部门" width="120" align="center" prop="deptName" />
+            </el-table-column> -->
+            <!-- <el-table-column label="部门" width="120" align="center" prop="deptName" /> -->
             <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
             <el-table-column label="邮箱" align="center" prop="email" width="160" />
             <el-table-column label="状态" align="center" prop="status" width="80">
@@ -115,7 +137,11 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="创建时间" align="center" prop="createTime" width="150" />
+            <el-table-column label="创建时间" align="center" width="180">
+              <template #default="scope">
+                {{ useDateFormat(scope.row.createTime, "YYYY-MM-DD HH:mm:ss").value }}
+              </template>
+            </el-table-column>
             <el-table-column label="操作" fixed="right" width="220">
               <template #default="scope">
                 <el-button
@@ -252,9 +278,9 @@ import UserAPI, { UserForm, UserPageQuery, UserPageVO } from "@/api/system/user-
 import DeptAPI from "@/api/system/dept-api";
 import RoleAPI from "@/api/system/role-api";
 
-import DeptTree from "./components/DeptTree.vue";
 import UserImport from "./components/UserImport.vue";
 import { useUserStore } from "@/store";
+import { useDateFormat } from "@vueuse/core";
 const userStore = useUserStore();
 defineOptions({
   name: "User",

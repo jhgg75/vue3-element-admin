@@ -1,4 +1,5 @@
 import type { IContentConfig } from "@/components/CURD/types";
+import { ElMessage } from "element-plus";
 
 const contentConfig: IContentConfig = {
   // permPrefix: "sys:demo", // 不写不进行按钮权限校验

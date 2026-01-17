@@ -9,11 +9,10 @@ const UserAPI = {
    * @returns 登录用户昵称、头像信息，包括角色和权限
    */
   getInfo() {
-    return request<any, UserInfo>({
+    return request<any, MyProfileResponse>({
       url: `/api/account/my-profile`,
       method: "get",
     }).then((userObj) => {
-      // 头像处理
       const avatarPath = userObj.extraProperties?.Avatar;
       let avatar = "";
       if (avatarPath) {
@@ -47,7 +46,19 @@ const UserAPI = {
       MaxResultCount: queryParams.pageSize,
     };
 
-    if (queryParams.keywords) {
+    if (queryParams.userName) {
+      params.UserName = queryParams.userName;
+    }
+    if (queryParams.name) {
+      params.Name = queryParams.name;
+    }
+    if (queryParams.email) {
+      params.Email = queryParams.email;
+    }
+    if (queryParams.phoneNumber) {
+      params.PhoneNumber = queryParams.phoneNumber;
+    }
+    if (!params.UserName && queryParams.keywords) {
       params.UserName = queryParams.keywords;
     }
 
@@ -307,12 +318,36 @@ export interface UserInfo {
   perms: string[];
 }
 
+export interface MyProfileResponse {
+  id: string;
+  userName: string;
+  name: string;
+  extraProperties?: {
+    Avatar?: string;
+    [key: string]: any;
+  };
+  roles?: string[];
+  perms?: string[];
+}
+
 /**
  * 用户分页查询对象
  */
 export interface UserPageQuery extends PageQuery {
   /** 搜索关键字 */
   keywords?: string;
+
+  /** 用户名 */
+  userName?: string;
+
+  /** 昵称 */
+  name?: string;
+
+  /** 邮箱 */
+  email?: string;
+
+  /** 手机号 */
+  phoneNumber?: string;
 
   /** 用户状态 */
   status?: number;
@@ -331,7 +366,7 @@ export interface UserPageVO {
   /** 用户头像URL */
   avatar?: string;
   /** 创建时间 */
-  createTime?: Date;
+  createTime?: string;
   /** 部门名称 */
   deptName?: string;
   /** 用户邮箱 */
