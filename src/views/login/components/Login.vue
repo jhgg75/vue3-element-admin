@@ -131,7 +131,7 @@ const rememberMe = AuthStorage.getRememberMe();
 
 const loginFormData = ref<LoginFormData>({
   username: "admin",
-  password: "1q2w3E*",
+  password: "123456",
   clientId: "EasyNews_App",
   grantType: "password",
   scope: "EasyNews offline_access",
