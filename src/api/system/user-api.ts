@@ -158,10 +158,23 @@ const UserAPI = {
    * @param ids 用户ID字符串，多个以英文逗号(,)分割
    */
   deleteByIds(ids: string) {
-    return request({
-      url: `${USER_BASE_URL}/${ids}`,
-      method: "delete",
-    });
+    const idList = ids
+      .split(",")
+      .map((id) => id.trim())
+      .filter((id) => id);
+
+    if (idList.length === 0) {
+      return Promise.resolve();
+    }
+
+    const requests = idList.map((id) =>
+      request({
+        url: `/api/identity/users/${id}`,
+        method: "delete",
+      })
+    );
+
+    return Promise.all(requests);
   },
 
   /** 下载用户导入模板 */
