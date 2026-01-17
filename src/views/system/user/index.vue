@@ -131,6 +131,16 @@
             <el-table-column type="selection" width="50" align="center" />
             <el-table-column label="用户名" prop="username" />
             <el-table-column label="昵称" width="150" align="center" prop="nickname" />
+            <el-table-column label="角色" align="center" min-width="160">
+              <template #default="scope">
+                <span v-if="Array.isArray(scope.row.roles)">
+                  {{ scope.row.roles.join("，") }}
+                </span>
+                <span v-else>
+                  {{ scope.row.roleNames }}
+                </span>
+              </template>
+            </el-table-column>
             <!-- <el-table-column label="性别" width="100" align="center">
               <template #default="scope">
                 <DictLabel v-model="scope.row.gender" code="gender" />
@@ -367,9 +377,10 @@ async function handleToggleActive(row: UserPageVO) {
   const text = targetIsActive ? "启用" : "禁用";
   loading.value = true;
   try {
-    const form = await UserAPI.getFormData(row.id);
-    await UserAPI.update(row.id, { ...form, isActive: targetIsActive });
+    await UserAPI.setActive(row.id, targetIsActive);
     ElMessage.success(text + "成功");
+    row.isActive = targetIsActive;
+    row.status = targetIsActive ? 1 : 0;
     await fetchData();
   } finally {
     loading.value = false;

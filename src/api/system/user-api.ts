@@ -77,6 +77,7 @@ const UserAPI = {
         email: item.email,
         mobile: item.phoneNumber,
         avatar: item.avatar,
+        roles: item.roles || [],
         roleNames: Array.isArray(item.roles) ? item.roles.join(",") : item.roles,
         isActive: item.isActive,
         status: item.isActive ? 1 : 0,
@@ -141,6 +142,17 @@ const UserAPI = {
       url: `${USER_BASE_URL}/${id}/password/reset`,
       method: "put",
       params: { password },
+    });
+  },
+
+  /**
+   * 启用/禁用用户
+   */
+  setActive(userId: string, isActive: boolean) {
+    return request({
+      url: `/api/users/set-active`,
+      method: "post",
+      data: { userId, isActive },
     });
   },
 
@@ -382,6 +394,8 @@ export interface UserPageVO {
   mobile?: string;
   /** 用户昵称 */
   nickname?: string;
+  /** 角色数组 */
+  roles?: string[];
   /** 角色名称，多个使用英文逗号(,)分割 */
   roleNames?: string;
   /** 是否启用 */
