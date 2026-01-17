@@ -60,6 +60,11 @@ const UserAPI = {
     if (!params.UserName && queryParams.keywords) {
       params.UserName = queryParams.keywords;
     }
+    if (Array.isArray(queryParams.createTime) && queryParams.createTime.length === 2) {
+      const [creationTimeStart, creationTimeEnd] = queryParams.createTime;
+      params.creationTimeStart = creationTimeStart;
+      params.creationTimeEnd = creationTimeEnd;
+    }
 
     return request<any, UserListResponse>({
       url: `/api/users`,

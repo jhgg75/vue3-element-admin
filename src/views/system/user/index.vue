@@ -6,7 +6,7 @@
       <el-col :lg="showDeptTree ? 20 : 24" :xs="24">
         <!-- 搜索区域 -->
         <div class="search-container">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="auto">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="80px">
             <el-form-item label="用户名" prop="userName">
               <el-input
                 v-model="queryParams.userName"
