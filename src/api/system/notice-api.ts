@@ -4,11 +4,25 @@ const NOTICE_BASE_URL = "/api/v1/notices";
 
 const NoticeAPI = {
   /** 获取通知公告分页数据 */
-  getPage(queryParams?: NoticePageQuery) {
-    return request<any, PageResult<NoticePageVO[]>>({
-      url: `${NOTICE_BASE_URL}/page`,
+  getPage(queryParams: NoticePageQuery = { pageNum: 1, pageSize: 10 }) {
+    const params: any = {
+      SkipCount: (queryParams.pageNum - 1) * queryParams.pageSize,
+      MaxResultCount: queryParams.pageSize,
+      Sorting: "creationTime desc",
+    };
+    if (queryParams.title) params.Filter = queryParams.title;
+    if (queryParams.publishStatus !== undefined)
+      params.IsPublished = queryParams.publishStatus === 1;
+
+    return request<any, any>({
+      url: `/api/announcements`,
       method: "get",
-      params: queryParams,
+      params,
+    }).then((res) => {
+      return {
+        list: res.items || [],
+        total: res.totalCount || 0,
+      } as PageResult<NoticePageVO[]>;
     });
   },
   /** 获取通知公告表单数据 */
