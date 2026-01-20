@@ -87,13 +87,13 @@ export const usePermissionStore = defineStore("permission", () => {
           component: "Layout",
           redirect: "/notice-manager/list",
           name: "NoticeManager",
-          meta: { title: "消息通知管理", icon: "el-icon-Bell", alwaysShow: true },
+          meta: { title: "公告管理", icon: "el-icon-Bell", alwaysShow: true },
           children: [
             {
               path: "list",
               component: "system/notice/index",
               name: "NoticeList",
-              meta: { title: "消息通知列表", icon: "el-icon-Bell" },
+              meta: { title: "公告列表", icon: "el-icon-Bell" },
               children: [],
             },
           ],
