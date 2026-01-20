@@ -39,7 +39,19 @@ const RoleAPI = {
   },
   /** 获取角色下拉数据源 */
   getOptions() {
-    return request<any, OptionType[]>({ url: `${ROLE_BASE_URL}/options`, method: "get" });
+    return request<any, any>({
+      url: `${ROLE_BASE_URL}`,
+      method: "get",
+      params: {
+        SkipCount: 0,
+        MaxResultCount: 1000,
+      },
+    }).then((res) => {
+      return (res.items || []).map((item: any) => ({
+        value: item.id,
+        label: item.displayName ?? item.name,
+      }));
+    });
   },
   /** 获取角色的菜单ID集合 */
   getRoleMenuIds(roleId: string) {
