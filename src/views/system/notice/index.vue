@@ -35,7 +35,7 @@
     <el-card shadow="hover" class="data-table">
       <div class="data-table__toolbar">
         <div class="data-table__toolbar--actions">
-          <el-button type="success" icon="plus" @click="handleOpenDialog()">新增通知</el-button>
+          <el-button type="success" icon="plus" @click="handleOpenDialog()">新增</el-button>
           <el-button
             v-hasPerm="['sys:notice:delete']"
             type="danger"
@@ -59,44 +59,49 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column type="index" label="序号" width="60" />
         <el-table-column label="通知标题" prop="title" min-width="200" />
-        <el-table-column align="center" label="通知类型" width="150">
+        <el-table-column align="center" label="通知类型" width="100">
           <template #default="scope">
-            <DictLabel v-model="scope.row.type" :code="'notice_type'" />
+            <el-tag v-if="scope.row.type == 0" type="info">通知</el-tag>
+            <el-tag v-else-if="scope.row.type == 1" type="success">活动</el-tag>
+            <el-tag v-else-if="scope.row.type == 2" type="warning">更新</el-tag>
+            <el-tag v-else-if="scope.row.type == 3" type="danger">维护</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发布人" prop="publisherName" width="150" />
+        <el-table-column align="center" label="发布人" prop="publisherName" width="100" />
         <el-table-column align="center" label="通知等级" width="100">
           <template #default="scope">
-            <DictLabel v-model="scope.row.level" code="notice_level" />
+            <el-tag v-if="scope.row.level == 0" type="info">普通</el-tag>
+            <el-tag v-else-if="scope.row.level == 1" type="warning">紧急</el-tag>
+            <el-tag v-else-if="scope.row.level == 2" type="danger">严重</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="通告目标类型" prop="targetType" min-width="100">
+        <el-table-column align="center" label="目标类型" prop="targetType" width="100">
           <template #default="scope">
-            <el-tag v-if="scope.row.targetType == 1" type="warning">全体</el-tag>
-            <el-tag v-if="scope.row.targetType == 2" type="success">指定</el-tag>
+            <el-tag v-if="scope.row.targetType == 0" type="warning">全体</el-tag>
+            <el-tag v-else-if="scope.row.targetType == 1" type="success">指定</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发布状态" min-width="100">
+        <el-table-column align="center" label="发布状态" width="100">
           <template #default="scope">
-            <el-tag v-if="scope.row.publishStatus == 0" type="info">未发布</el-tag>
-            <el-tag v-if="scope.row.publishStatus == 1" type="success">已发布</el-tag>
-            <el-tag v-if="scope.row.publishStatus == -1" type="warning">已撤回</el-tag>
+            <el-tag v-if="scope.row.isPublished" type="success">已发布</el-tag>
+            <el-tag v-else type="info">未发布</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作时间" width="250">
+        <el-table-column align="center" label="置顶" width="80">
           <template #default="scope">
-            <div class="flex-x-start">
-              <span>创建时间：</span>
-              <span>{{ scope.row.createTime || "-" }}</span>
+            <el-tag v-if="scope.row.isSticky" type="danger">是</el-tag>
+            <el-tag v-else type="info">否</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="发布时间" width="320">
+          <template #default="scope">
+            <div v-if="scope.row.publishStart" class="flex-x-start">
+              <span>开始：</span>
+              <span>{{ scope.row.publishStart }}</span>
             </div>
-
-            <div v-if="scope.row.publishStatus === 1" class="flex-x-start">
-              <span>发布时间：</span>
-              <span>{{ scope.row.publishTime || "-" }}</span>
-            </div>
-            <div v-else-if="scope.row.publishStatus === -1" class="flex-x-start">
-              <span>撤回时间：</span>
-              <span>{{ scope.row.revokeTime || "-" }}</span>
+            <div v-if="scope.row.publishEnd" class="flex-x-start">
+              <span>结束：</span>
+              <span>{{ scope.row.publishEnd }}</span>
             </div>
           </template>
         </el-table-column>
@@ -197,18 +202,27 @@
         </el-form-item>
 
         <el-form-item label="通知类型" prop="type">
-          <Dict v-model="formData.type" code="notice_type" />
+          <el-select v-model="formData.type" placeholder="请选择通知类型">
+            <el-option label="通知" :value="0" />
+            <el-option label="活动" :value="1" />
+            <el-option label="更新" :value="2" />
+            <el-option label="维护" :value="3" />
+          </el-select>
         </el-form-item>
         <el-form-item label="通知等级" prop="level">
-          <Dict v-model="formData.level" code="notice_level" />
+          <el-select v-model="formData.level" placeholder="请选择通知等级">
+            <el-option label="普通" :value="0" />
+            <el-option label="紧急" :value="1" />
+            <el-option label="严重" :value="2" />
+          </el-select>
         </el-form-item>
         <el-form-item label="目标类型" prop="targetType">
           <el-radio-group v-model="formData.targetType">
-            <el-radio :value="1">全体</el-radio>
-            <el-radio :value="2">指定</el-radio>
+            <el-radio :value="0">全体</el-radio>
+            <el-radio :value="1">指定</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="formData.targetType == 2" label="指定用户" prop="targetUserIds">
+        <el-form-item v-if="formData.targetType == 1" label="指定用户" prop="targetUserIds">
           <el-select v-model="formData.targetUserIds" multiple search placeholder="请选择指定用户">
             <el-option
               v-for="item in userOptions"
@@ -284,7 +298,6 @@ import NoticeAPI, {
   NoticePageQuery,
   NoticeDetailVO,
 } from "@/api/system/notice-api";
-import UserAPI from "@/api/system/user-api";
 
 const queryFormRef = ref();
 const dataFormRef = ref();
@@ -310,8 +323,9 @@ const dialog = reactive({
 
 // 通知公告表单数据
 const formData = reactive<NoticeForm>({
-  level: "L", // 默认优先级为低
-  targetType: 1, // 默认目标类型为全体
+  level: 0, // Normal
+  targetType: 0, // All
+  type: 0, // Notification
   isPublished: false,
   isSticky: false,
   priority: 0,
@@ -375,10 +389,6 @@ function handleSelectionChange(selection: any) {
 
 // 打开通知公告弹窗
 function handleOpenDialog(id?: string) {
-  UserAPI.getOptions().then((data) => {
-    userOptions.value = data;
-  });
-
   dialog.visible = true;
   if (id) {
     dialog.title = "修改公告";
@@ -387,8 +397,9 @@ function handleOpenDialog(id?: string) {
     });
   } else {
     Object.assign(formData, {
-      level: "L",
-      targetType: 1,
+      level: 0,
+      targetType: 0,
+      type: 0,
       isPublished: false,
       isSticky: false,
       priority: 0,
@@ -419,6 +430,11 @@ function handleSubmit() {
     if (valid) {
       loading.value = true;
       const id = formData.id;
+      // Ensure targetUserIds is empty if targetType is All (0)
+      if (formData.targetType === 0) {
+        formData.targetUserIds = [];
+      }
+
       if (id) {
         NoticeAPI.update(id, formData)
           .then(() => {

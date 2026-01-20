@@ -17,7 +17,7 @@ const NoticeAPI = {
   },
   /** 添加通知公告 */
   create(data: NoticeForm) {
-    return request({ url: `${NOTICE_BASE_URL}`, method: "post", data });
+    return request({ url: `/api/announcements`, method: "post", data });
   },
   /** 更新通知公告 */
   update(id: string, data: NoticeForm) {
@@ -80,14 +80,14 @@ export interface NoticeForm {
   isSticky?: boolean;
   /** 优先级 */
   priority?: number;
-  /** 类型 */
+  /** 类型 (0:Notification, 1:Activity, 2:Update, 3:Maintenance) */
   type?: number;
-  /** 优先级/级别 */
-  level?: string;
-  /** 目标类型 */
+  /** 级别 (0:Normal, 1:Urgent, 2:Critical) */
+  level?: number;
+  /** 目标类型 (0:All, 1:SpecificUsers) */
   targetType?: number;
   /** 目标用户ID(多个以英文逗号(,)分割) */
-  targetUserIds?: string;
+  targetUserIds?: string[];
 }
 export interface NoticePageVO {
   /** 通知ID */
@@ -98,18 +98,26 @@ export interface NoticePageVO {
   content?: string;
   /** 类型 */
   type?: number;
+  /** 级别 */
+  level?: number;
   /** 发布人ID */
-  publisherId?: bigint;
+  publisherId?: string;
+  /** 发布人姓名 */
+  publisherName?: string;
   /** 优先级 */
   priority?: number;
   /** 目标类型 */
   targetType?: number;
-  /** 发布状态 */
-  publishStatus?: number;
-  /** 发布时间 */
-  publishTime?: Date;
-  /** 撤回时间 */
-  revokeTime?: Date;
+  /** 是否发布 */
+  isPublished?: boolean;
+  /** 发布开始时间 */
+  publishStart?: string;
+  /** 发布结束时间 */
+  publishEnd?: string;
+  /** 是否置顶 */
+  isSticky?: boolean;
+  /** 创建时间 */
+  creationTime?: string;
 }
 export interface NoticeDetailVO {
   /** 通知ID */
