@@ -6,7 +6,7 @@
       <el-col :lg="showDeptTree ? 20 : 24" :xs="24">
         <!-- 搜索区域 -->
         <div class="search-container">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="80px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="auto">
             <el-form-item label="用户名" prop="userName">
               <el-input
                 v-model="queryParams.userName"
@@ -55,10 +55,11 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="创建时间">
+            <el-form-item label="创建时间" prop="createTime">
               <el-date-picker
                 v-model="queryParams.createTime"
                 :editable="false"
+                class="!w-[240px]"
                 type="daterange"
                 range-separator="~"
                 start-placeholder="开始时间"
