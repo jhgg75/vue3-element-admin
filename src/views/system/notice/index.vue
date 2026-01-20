@@ -35,14 +35,7 @@
     <el-card shadow="hover" class="data-table">
       <div class="data-table__toolbar">
         <div class="data-table__toolbar--actions">
-          <el-button
-            v-hasPerm="['sys:notice:add']"
-            type="success"
-            icon="plus"
-            @click="handleOpenDialog()"
-          >
-            新增通知
-          </el-button>
+          <el-button type="success" icon="plus" @click="handleOpenDialog()">新增通知</el-button>
           <el-button
             v-hasPerm="['sys:notice:delete']"
             type="danger"
@@ -178,6 +171,31 @@
           <el-input v-model="formData.title" placeholder="通知标题" clearable />
         </el-form-item>
 
+        <el-form-item label="是否发布" prop="isPublished">
+          <el-switch v-model="formData.isPublished" />
+        </el-form-item>
+        <el-form-item label="发布时间" prop="publishStart">
+          <el-date-picker
+            v-model="formData.publishStart"
+            type="datetime"
+            placeholder="开始时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+          <span class="mx-2">至</span>
+          <el-date-picker
+            v-model="formData.publishEnd"
+            type="datetime"
+            placeholder="结束时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </el-form-item>
+        <el-form-item label="是否置顶" prop="isSticky">
+          <el-switch v-model="formData.isSticky" />
+        </el-form-item>
+        <el-form-item label="优先级" prop="priority">
+          <el-input-number v-model="formData.priority" :min="0" />
+        </el-form-item>
+
         <el-form-item label="通知类型" prop="type">
           <Dict v-model="formData.type" code="notice_type" />
         </el-form-item>
@@ -294,6 +312,9 @@ const dialog = reactive({
 const formData = reactive<NoticeForm>({
   level: "L", // 默认优先级为低
   targetType: 1, // 默认目标类型为全体
+  isPublished: false,
+  isSticky: false,
+  priority: 0,
 });
 
 // 通知公告表单校验规则
@@ -365,7 +386,13 @@ function handleOpenDialog(id?: string) {
       Object.assign(formData, data);
     });
   } else {
-    Object.assign(formData, { level: 0, targetType: 0 });
+    Object.assign(formData, {
+      level: "L",
+      targetType: 1,
+      isPublished: false,
+      isSticky: false,
+      priority: 0,
+    });
     dialog.title = "新增公告";
   }
 }

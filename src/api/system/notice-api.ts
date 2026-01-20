@@ -70,6 +70,16 @@ export interface NoticeForm {
   title?: string;
   /** 内容 */
   content?: string;
+  /** 是否发布 */
+  isPublished?: boolean;
+  /** 发布开始时间 */
+  publishStart?: string;
+  /** 发布结束时间 */
+  publishEnd?: string;
+  /** 是否置顶 */
+  isSticky?: boolean;
+  /** 优先级 */
+  priority?: number;
   /** 类型 */
   type?: number;
   /** 优先级/级别 */
