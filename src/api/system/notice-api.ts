@@ -19,8 +19,23 @@ const NoticeAPI = {
       method: "get",
       params,
     }).then((res) => {
+      const list = (res.items || []).map((item: any) => ({
+        ...item,
+        id: item.id || item.Id,
+        title: item.title || item.Title,
+        content: item.content || item.Content,
+        type: item.type !== undefined ? item.type : item.Type,
+        level: item.level !== undefined ? item.level : item.Level,
+        targetType: item.targetType !== undefined ? item.targetType : item.TargetType,
+        isPublished: item.isPublished !== undefined ? item.isPublished : item.IsPublished,
+        isSticky: item.isSticky !== undefined ? item.isSticky : item.IsSticky,
+        publishStart: item.publishStart || item.PublishStart,
+        publishEnd: item.publishEnd || item.PublishEnd,
+        publisherName: item.publisherName || item.PublisherName,
+        creationTime: item.creationTime || item.CreationTime,
+      }));
       return {
-        list: res.items || [],
+        list,
         total: res.totalCount || 0,
       } as PageResult<NoticePageVO[]>;
     });
@@ -35,23 +50,23 @@ const NoticeAPI = {
   },
   /** 更新通知公告 */
   update(id: string, data: NoticeForm) {
-    return request({ url: `${NOTICE_BASE_URL}/${id}`, method: "put", data });
+    return request({ url: `/api/announcements/${id}`, method: "put", data });
   },
   /** 批量删除通知公告，多个以英文逗号(,)分割 */
   deleteByIds(ids: string) {
-    return request({ url: `${NOTICE_BASE_URL}/${ids}`, method: "delete" });
+    return request({ url: `/api/announcements/${ids}`, method: "delete" });
   },
   /** 发布通知 */
   publish(id: string) {
-    return request({ url: `${NOTICE_BASE_URL}/${id}/publish`, method: "put" });
+    return request({ url: `/api/announcements/${id}/publish`, method: "put" });
   },
-  /** 撤回通知 */
+  /** 撤回通知 (停止发布) */
   revoke(id: string) {
-    return request({ url: `${NOTICE_BASE_URL}/${id}/revoke`, method: "put" });
+    return request({ url: `/api/announcements/${id}/unpublish`, method: "put" });
   },
   /** 查看通知 */
   getDetail(id: string) {
-    return request<any, NoticeDetailVO>({ url: `${NOTICE_BASE_URL}/${id}/detail`, method: "get" });
+    return request<any, NoticeDetailVO>({ url: `/api/announcements/${id}`, method: "get" });
   },
   /** 全部已读 */
   readAll() {

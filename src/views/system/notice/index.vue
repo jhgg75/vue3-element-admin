@@ -37,7 +37,6 @@
         <div class="data-table__toolbar--actions">
           <el-button type="success" icon="plus" @click="handleOpenDialog()">新增</el-button>
           <el-button
-            v-hasPerm="['sys:notice:delete']"
             type="danger"
             :disabled="selectIds.length === 0"
             icon="delete"
@@ -105,14 +104,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" fixed="right" label="操作" width="150">
+        <el-table-column align="center" fixed="right" label="操作" width="250">
           <template #default="scope">
             <el-button type="primary" size="small" link @click="openDetailDialog(scope.row.id)">
               查看
             </el-button>
             <el-button
-              v-if="scope.row.publishStatus != 1"
-              v-hasPerm="['sys:notice:publish']"
+              v-if="!scope.row.isPublished"
               type="primary"
               size="small"
               link
@@ -121,8 +119,7 @@
               发布
             </el-button>
             <el-button
-              v-if="scope.row.publishStatus == 1"
-              v-hasPerm="['sys:notice:revoke']"
+              v-if="scope.row.isPublished"
               type="primary"
               size="small"
               link
@@ -130,24 +127,10 @@
             >
               撤回
             </el-button>
-            <el-button
-              v-if="scope.row.publishStatus != 1"
-              v-hasPerm="['sys:notice:edit']"
-              type="primary"
-              size="small"
-              link
-              @click="handleOpenDialog(scope.row.id)"
-            >
+            <el-button type="primary" size="small" link @click="handleOpenDialog(scope.row.id)">
               编辑
             </el-button>
-            <el-button
-              v-if="scope.row.publishStatus != 1"
-              v-hasPerm="['sys:notice:delete']"
-              type="danger"
-              size="small"
-              link
-              @click="handleDelete(scope.row.id)"
-            >
+            <el-button type="danger" size="small" link @click="handleDelete(scope.row.id)">
               删除
             </el-button>
           </template>
@@ -303,7 +286,7 @@ const queryFormRef = ref();
 const dataFormRef = ref();
 
 const loading = ref(false);
-const selectIds = ref<number[]>([]);
+const selectIds = ref<string[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<NoticePageQuery>({
@@ -471,7 +454,7 @@ function handleCloseDialog() {
 }
 
 // 删除通知公告
-function handleDelete(id?: number) {
+function handleDelete(id?: string) {
   const deleteIds = [id || selectIds.value].join(",");
   if (!deleteIds) {
     ElMessage.warning("请勾选删除项");
