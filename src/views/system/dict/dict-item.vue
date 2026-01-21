@@ -42,13 +42,14 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="字典项编码" prop="code" />
         <el-table-column label="字典项标签" prop="label" />
         <el-table-column label="字典项值" prop="value" />
-        <el-table-column label="排序" prop="sort" />
+        <el-table-column label="排序" prop="sortOrder" />
         <el-table-column label="状态">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? "启用" : "禁用" }}
+            <el-tag :type="scope.row.isEnabled ? 'success' : 'info'">
+              {{ scope.row.isEnabled ? "启用" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -94,52 +95,20 @@
       @close="handleCloseDialog"
     >
       <el-form ref="dataFormRef" :model="formData" :rules="computedRules" label-width="100px">
+        <el-form-item label="字典项编码" prop="code">
+          <el-input v-model="formData.code" placeholder="请输入字典项编码" />
+        </el-form-item>
         <el-form-item label="字典项标签" prop="label">
           <el-input v-model="formData.label" placeholder="请输入字典标签" />
         </el-form-item>
         <el-form-item label="字典项值" prop="value">
           <el-input v-model="formData.value" placeholder="请输入字典值" />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="1">启用</el-radio>
-            <el-radio :value="0">禁用</el-radio>
-          </el-radio-group>
+        <el-form-item label="状态" prop="isEnabled">
+          <el-switch v-model="formData.isEnabled" />
         </el-form-item>
-        <el-form-item label="排序">
-          <el-input-number v-model="formData.sort" controls-position="right" />
-        </el-form-item>
-        <el-form-item>
-          <template #label>
-            <div class="flex-y-center">
-              标签类型
-              <el-tooltip>
-                <template #content>回显样式，为空时则显示 '文本'</template>
-                <el-icon class="ml-1 cursor-pointer">
-                  <QuestionFilled />
-                </el-icon>
-              </el-tooltip>
-            </div>
-          </template>
-          <el-select
-            v-model="formData.tagType"
-            placeholder="请选择标签类型"
-            clearable
-            @clear="formData.tagType = ''"
-          >
-            <template #label="{ value }">
-              <el-tag v-if="value" :type="value">
-                {{ formData.label ? formData.label : "字典标签" }}
-              </el-tag>
-            </template>
-            <!-- <el-option label="默认文本" value="" /> -->
-            <el-option v-for="type in tagType" :key="type" :label="type" :value="type">
-              <div flex-y-center gap-10px>
-                <el-tag :type="type">{{ formData.label ?? "字典标签" }}</el-tag>
-                <span>{{ type }}</span>
-              </div>
-            </el-option>
-          </el-select>
+        <el-form-item label="排序" prop="sortOrder">
+          <el-input-number v-model="formData.sortOrder" controls-position="right" />
         </el-form-item>
       </el-form>
 
@@ -154,12 +123,11 @@
 </template>
 
 <script setup lang="ts">
-import type { TagProps } from "element-plus";
 import DictAPI, { DictItemPageQuery, DictItemPageVO, DictItemForm } from "@/api/system/dict-api";
 
 const route = useRoute();
 
-const dictCode = ref(route.query.dictCode as string);
+const dictionaryId = ref(route.query.dictionaryId as string);
 
 const queryFormRef = ref();
 const dataFormRef = ref();
@@ -180,13 +148,18 @@ const dialog = reactive({
   visible: false,
 });
 
-const formData = reactive<DictItemForm>({});
-
-// 标签类型
-const tagType: TagProps["type"][] = ["primary", "success", "info", "warning", "danger"];
+const formData = reactive<DictItemForm>({
+  dictionaryId: dictionaryId.value,
+  code: "",
+  label: "",
+  value: "",
+  sortOrder: 1,
+  isEnabled: true,
+});
 
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
+    code: [{ required: true, message: "请输入字典项编码", trigger: "blur" }],
     value: [{ required: true, message: "请输入字典值", trigger: "blur" }],
     label: [{ required: true, message: "请输入字典标签", trigger: "blur" }],
   };
@@ -197,7 +170,7 @@ const computedRules = computed(() => {
 // 获取数据
 function fetchData() {
   loading.value = true;
-  DictAPI.getDictItemPage(dictCode.value, queryParams)
+  DictAPI.getDictItemPage(dictionaryId.value, queryParams)
     .then((data) => {
       tableData.value = data.list;
       total.value = data.total;
@@ -231,7 +204,7 @@ function handleOpenDialog(row?: DictItemPageVO) {
   dialog.title = row ? "编辑字典项" : "新增字典项";
 
   if (row?.id) {
-    DictAPI.getDictItemFormData(dictCode.value, row.id).then((data) => {
+    DictAPI.getDictItemFormData(dictionaryId.value, row.id).then((data) => {
       Object.assign(formData, data);
     });
   }
@@ -244,9 +217,9 @@ function handleSubmitClick() {
       loading.value = true;
       const id = formData.id;
 
-      formData.dictCode = dictCode.value;
+      formData.dictionaryId = dictionaryId.value;
       if (id) {
-        DictAPI.updateDictItem(dictCode.value, id, formData)
+        DictAPI.updateDictItem(dictionaryId.value, id, formData)
           .then(() => {
             ElMessage.success("修改成功");
             handleCloseDialog();
@@ -254,7 +227,7 @@ function handleSubmitClick() {
           })
           .finally(() => (loading.value = false));
       } else {
-        DictAPI.createDictItem(dictCode.value, formData)
+        DictAPI.createDictItem(dictionaryId.value, formData)
           .then(() => {
             ElMessage.success("新增成功");
             handleCloseDialog();
@@ -272,9 +245,11 @@ function handleCloseDialog() {
   dataFormRef.value.clearValidate();
 
   formData.id = undefined;
-  formData.sort = 1;
-  formData.status = 1;
-  formData.tagType = "";
+  formData.sortOrder = 1;
+  formData.isEnabled = true;
+  formData.code = "";
+  formData.label = "";
+  formData.value = "";
 
   dialog.visible = false;
 }
@@ -297,7 +272,7 @@ function handleDelete(id?: number) {
     type: "warning",
   }).then(
     () => {
-      DictAPI.deleteDictItems(dictCode.value, itemIds).then(() => {
+      DictAPI.deleteDictItems(dictionaryId.value, itemIds).then(() => {
         ElMessage.success("删除成功");
         handleResetQuery();
       });

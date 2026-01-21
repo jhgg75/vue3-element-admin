@@ -45,14 +45,15 @@
       >
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="字典名称" prop="name" />
-        <el-table-column label="字典编码" prop="dictCode" />
-        <el-table-column label="状态" prop="status">
+        <el-table-column label="字典编码" prop="code" />
+        <el-table-column label="是否静态" prop="isStatic" align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-              {{ scope.row.status === 1 ? "启用" : "禁用" }}
+            <el-tag :type="scope.row.isStatic ? 'info' : 'success'">
+              {{ scope.row.isStatic ? "是" : "否" }}
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="描述" prop="description" />
         <el-table-column fixed="right" label="操作" align="center" width="220">
           <template #default="scope">
             <el-button type="primary" link size="small" @click.stop="handleOpenDictData(scope.row)">
@@ -105,19 +106,16 @@
           <el-input v-model="formData.name" placeholder="请输入字典名称" />
         </el-form-item>
 
-        <el-form-item label="字典编码" prop="dictCode">
-          <el-input v-model="formData.dictCode" placeholder="请输入字典编码" />
+        <el-form-item label="字典编码" prop="code">
+          <el-input v-model="formData.code" placeholder="请输入字典编码" />
         </el-form-item>
 
-        <el-form-item label="状态">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="1">启用</el-radio>
-            <el-radio :value="0">禁用</el-radio>
-          </el-radio-group>
+        <el-form-item label="是否静态" prop="isStatic">
+          <el-switch v-model="formData.isStatic" />
         </el-form-item>
 
-        <el-form-item label="备注">
-          <el-input v-model="formData.remark" type="textarea" placeholder="请输入备注" />
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="formData.description" type="textarea" placeholder="请输入描述" />
         </el-form-item>
       </el-form>
 
@@ -165,7 +163,7 @@ const formData = reactive<DictForm>({});
 const computedRules = computed(() => {
   const rules: Partial<Record<string, any>> = {
     name: [{ required: true, message: "请输入字典名称", trigger: "blur" }],
-    dictCode: [{ required: true, message: "请输入字典编码", trigger: "blur" }],
+    code: [{ required: true, message: "请输入字典编码", trigger: "blur" }],
   };
   return rules;
 });
@@ -287,8 +285,8 @@ function handleDelete(id?: number) {
 // 打开字典项
 function handleOpenDictData(row: DictPageVO) {
   router.push({
-    path: "/system/dict-item",
-    query: { dictCode: row.dictCode, title: "【" + row.name + "】字典数据" },
+    path: "/dict-manager/item",
+    query: { dictionaryId: row.id, title: "【" + row.name + "】字典数据" },
   });
 }
 

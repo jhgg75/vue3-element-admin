@@ -131,6 +131,34 @@ export const usePermissionStore = defineStore("permission", () => {
           ],
         },
         {
+          path: "/dict-manager",
+          component: "Layout",
+          redirect: "/dict-manager/list",
+          name: "DictManager",
+          meta: { title: "字典管理", icon: "el-icon-Collection", alwaysShow: true },
+          children: [
+            {
+              path: "list",
+              component: "system/dict/index",
+              name: "DictList",
+              meta: { title: "字典列表", icon: "el-icon-Collection" },
+              children: [],
+            },
+            {
+              path: "item",
+              component: "system/dict/dict-item",
+              name: "DictData",
+              meta: {
+                title: "字典项",
+                icon: "el-icon-Collection",
+                hidden: true,
+                activeMenu: "/dict-manager/list",
+              },
+              children: [],
+            },
+          ],
+        },
+        {
           path: "/version-manager",
           component: "Layout",
           redirect: "/version-manager/list",

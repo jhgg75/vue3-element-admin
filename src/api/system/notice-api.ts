@@ -50,7 +50,8 @@ const NoticeAPI = {
   },
   /** 更新通知公告 */
   update(id: string, data: NoticeForm) {
-    const { id: _, ...rest } = data;
+    const rest = { ...data };
+    delete rest.id;
     return request({ url: `/api/announcements/${id}`, method: "put", data: rest });
   },
   /** 批量删除通知公告，多个以英文逗号(,)分割 */
