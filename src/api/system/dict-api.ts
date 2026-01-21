@@ -68,13 +68,12 @@ const DictAPI = {
       SkipCount: (queryParams.pageNum - 1) * queryParams.pageSize,
       MaxResultCount: queryParams.pageSize,
       Sorting: "sortOrder asc",
-      DictionaryId: dictionaryId,
     };
     if (queryParams.keywords) {
       params.Filter = queryParams.keywords;
     }
     return request<any, any>({
-      url: `${DICT_ITEM_BASE_URL}`,
+      url: `${DICT_BASE_URL}/${dictionaryId}/items`,
       method: "get",
       params,
     }).then((res) => {
