@@ -163,19 +163,9 @@
           <el-switch v-model="formData.isPublished" />
         </el-form-item>
         <el-form-item label="发布时间" prop="publishStart">
-          <el-date-picker
-            v-model="formData.publishStart"
-            type="datetime"
-            placeholder="开始时间"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
+          <el-date-picker v-model="formData.publishStart" type="datetime" placeholder="开始时间" />
           <span class="mx-2">至</span>
-          <el-date-picker
-            v-model="formData.publishEnd"
-            type="datetime"
-            placeholder="结束时间"
-            value-format="YYYY-MM-DD HH:mm:ss"
-          />
+          <el-date-picker v-model="formData.publishEnd" type="datetime" placeholder="结束时间" />
         </el-form-item>
         <el-form-item label="是否置顶" prop="isSticky">
           <el-switch v-model="formData.isSticky" />
@@ -375,7 +365,7 @@ function handleOpenDialog(id?: string) {
   dialog.visible = true;
   if (id) {
     dialog.title = "修改公告";
-    NoticeAPI.getFormData(id).then((data) => {
+    NoticeAPI.getDetail(id).then((data) => {
       Object.assign(formData, data);
     });
   } else {
@@ -414,9 +404,9 @@ function handleSubmit() {
       loading.value = true;
       const id = formData.id;
       // Ensure targetUserIds is empty if targetType is All (0)
-      if (formData.targetType === 0) {
-        formData.targetUserIds = [];
-      }
+      // if (formData.targetType === 0) {
+      //   formData.targetUserIds = [];
+      // }
 
       if (id) {
         NoticeAPI.update(id, formData)

@@ -185,26 +185,26 @@ export default defineMock([
   },
   // 修改通知
   {
-    url: "roles/:id",
+    url: "../announcements/:id",
     method: ["PUT"],
     body({ body }) {
       return {
         code: "00000",
         data: null,
-        msg: "修改通知" + body.name + "成功",
+        msg: "修改通知" + body.title + "成功",
       };
     },
   },
 
   // 删除通知
   {
-    url: "roles/:id",
+    url: "../announcements/:ids",
     method: ["DELETE"],
     body({ params }) {
       return {
         code: "00000",
         data: null,
-        msg: "删除通知" + params.id + "成功",
+        msg: "删除通知" + params.ids + "成功",
       };
     },
   },

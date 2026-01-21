@@ -50,7 +50,8 @@ const NoticeAPI = {
   },
   /** 更新通知公告 */
   update(id: string, data: NoticeForm) {
-    return request({ url: `/api/announcements/${id}`, method: "put", data });
+    const { id: _, ...rest } = data;
+    return request({ url: `/api/announcements/${id}`, method: "put", data: rest });
   },
   /** 批量删除通知公告，多个以英文逗号(,)分割 */
   deleteByIds(ids: string) {
@@ -102,9 +103,9 @@ export interface NoticeForm {
   /** 是否发布 */
   isPublished?: boolean;
   /** 发布开始时间 */
-  publishStart?: string;
+  publishStart?: string | Date;
   /** 发布结束时间 */
-  publishEnd?: string;
+  publishEnd?: string | Date;
   /** 是否置顶 */
   isSticky?: boolean;
   /** 优先级 */
@@ -160,9 +161,23 @@ export interface NoticeDetailVO {
   /** 发布人名称 */
   publisherName?: string;
   /** 优先级/级别 */
-  level?: string;
+  level?: number | string;
   /** 发布时间 */
   publishTime?: Date;
   /** 发布状态 */
   publishStatus?: number;
+  /** 是否发布 */
+  isPublished?: boolean;
+  /** 发布开始时间 */
+  publishStart?: string | Date;
+  /** 发布结束时间 */
+  publishEnd?: string | Date;
+  /** 是否置顶 */
+  isSticky?: boolean;
+  /** 优先级 */
+  priority?: number;
+  /** 目标类型 */
+  targetType?: number;
+  /** 目标用户ID */
+  targetUserIds?: string[];
 }
