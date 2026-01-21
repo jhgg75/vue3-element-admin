@@ -106,9 +106,6 @@
         </el-table-column>
         <el-table-column align="center" fixed="right" label="操作" width="250">
           <template #default="scope">
-            <el-button type="primary" size="small" link @click="openDetailDialog(scope.row.id)">
-              查看
-            </el-button>
             <el-button
               v-if="!scope.row.isPublished"
               type="primary"
@@ -216,46 +213,6 @@
         </div>
       </template>
     </el-dialog>
-    <!-- 通知公告详情 -->
-    <el-dialog
-      v-model="detailDialog.visible"
-      :show-close="false"
-      width="50%"
-      append-to-body
-      @close="closeDetailDialog"
-    >
-      <template #header>
-        <div class="flex-x-between">
-          <span>通知公告详情</span>
-          <div class="dialog-toolbar">
-            <el-button circle @click="closeDetailDialog">
-              <template #icon>
-                <Close />
-              </template>
-            </el-button>
-          </div>
-        </div>
-      </template>
-      <el-descriptions :column="1">
-        <el-descriptions-item label="标题：">
-          {{ currentNotice.title }}
-        </el-descriptions-item>
-        <el-descriptions-item label="发布状态：">
-          <el-tag v-if="currentNotice.publishStatus == 0" type="info">未发布</el-tag>
-          <el-tag v-else-if="currentNotice.publishStatus == 1" type="success">已发布</el-tag>
-          <el-tag v-else-if="currentNotice.publishStatus == -1" type="warning">已撤回</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="发布人：">
-          {{ currentNotice.publisherName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="发布时间：">
-          {{ currentNotice.publishTime }}
-        </el-descriptions-item>
-        <el-descriptions-item label="公告内容：">
-          <div class="notice-content" v-html="currentNotice.content" />
-        </el-descriptions-item>
-      </el-descriptions>
-    </el-dialog>
   </div>
 </template>
 
@@ -265,12 +222,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-import NoticeAPI, {
-  NoticePageVO,
-  NoticeForm,
-  NoticePageQuery,
-  NoticeDetailVO,
-} from "@/api/system/notice-api";
+import NoticeAPI, { NoticePageVO, NoticeForm, NoticePageQuery } from "@/api/system/notice-api";
 
 const queryFormRef = ref();
 const dataFormRef = ref();
@@ -323,11 +275,6 @@ const rules = reactive({
   ],
   type: [{ required: true, message: "请选择通知类型", trigger: "change" }],
 });
-
-const detailDialog = reactive({
-  visible: false,
-});
-const currentNotice = ref<NoticeDetailVO>({});
 
 // 查询通知公告
 function handleQuery() {
@@ -470,16 +417,6 @@ function handleDelete(id?: string) {
     }
   );
 }
-
-const closeDetailDialog = () => {
-  detailDialog.visible = false;
-};
-
-const openDetailDialog = async (id: string) => {
-  const noticeDetail = await NoticeAPI.getDetail(id);
-  currentNotice.value = noticeDetail;
-  detailDialog.visible = true;
-};
 
 onMounted(() => {
   handleQuery();
