@@ -133,7 +133,7 @@ const queryFormRef = ref();
 const dataFormRef = ref();
 
 const loading = ref(false);
-const ids = ref<number[]>([]);
+const ids = ref<string[]>([]);
 const total = ref(0);
 
 const queryParams = reactive<DictItemPageQuery>({
@@ -258,7 +258,7 @@ function handleCloseDialog() {
  *
  * @param id 字典ID
  */
-function handleDelete(id?: number) {
+function handleDelete(id?: string) {
   const itemIds = [id || ids.value].join(",");
 
   if (!itemIds) {
