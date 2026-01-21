@@ -104,7 +104,13 @@ const DictAPI = {
   },
   /** 新增字典项 */
   createDictItem(dictionaryId: string, data: DictItemForm) {
-    return request({ url: `${DICT_ITEM_BASE_URL}`, method: "post", data });
+    const rest = { ...data };
+    delete (rest as any).dictionaryId;
+    return request({
+      url: `${DICT_BASE_URL}/${dictionaryId}/items`,
+      method: "post",
+      data: rest,
+    });
   },
   /** 获取字典项表单数据 */
   getDictItemFormData(dictionaryId: string, id: string) {
